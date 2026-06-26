@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tinycode — Getting Started</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red-50: #ee0000;
+      --red-60: #a60000;
+      --white: #ffffff;
+      --gray-20: #e0e0e0;
+      --gray-40: #a3a3a3;
+      --gray-60: #4d4d4d;
+      --gray-80: #292929;
+      --black: #000000;
+      --purple-70: #21134d;
+      --purple-50: #5e40be;
+      --teal-70: #004d4d;
+      --teal-50: #37a3a3;
+      --teal-30: #9ad8d8;
+      --orange-50: #f5921b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Red Hat Text', Arial, Helvetica, sans-serif;
+      background: var(--black);
+      color: var(--gray-20);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--teal-50);
+      outline-offset: 4px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    a { color: var(--teal-50); text-decoration: none; transition: color 0.15s ease; }
+    a:hover { color: var(--teal-30); }
+
+    /* ═══════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════ */
+
+    .hero {
+      background: var(--purple-70);
+      padding: 6rem 0 5rem;
+    }
+
+    .hero-back {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.8rem;
+      color: var(--gray-40);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 3rem;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .hero-back:hover { color: var(--white); }
+
+    .hero-heading {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-weight: 500;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-heading .tiny { color: var(--teal-50); }
+    .hero-heading .code { color: var(--white); }
+
+    .hero-desc {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: var(--gray-20);
+      max-width: 580px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.8rem;
+    }
+
+    .hero-meta a { color: var(--teal-30); }
+    .hero-meta a:hover { color: var(--white); }
+
+    .hero-meta .sep { color: var(--gray-60); }
+
+    /* ═══════════════════════════════════════
+       SECTIONS
+       ═══════════════════════════════════════ */
+
+    .use-case {
+      padding: 5rem 0;
+    }
+
+    .use-case + .use-case {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .use-case.alt {
+      background: var(--gray-80);
+    }
+
+    .case-label {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal-50);
+      margin-bottom: 0.75rem;
+    }
+
+    .case-title {
+      font-family: 'Red Hat Display', Arial Black, sans-serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .case-repo {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.8rem;
+      color: var(--gray-40);
+      margin-bottom: 1.5rem;
+    }
+
+    .case-desc {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--gray-40);
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+
+    .case-desc strong {
+      color: var(--gray-20);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════
+       CODE BLOCKS
+       ═══════════════════════════════════════ */
+
+    pre {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.825rem;
+      line-height: 1.8;
+      color: var(--gray-20);
+    }
+
+    .alt pre {
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    pre .comment { color: var(--gray-60); }
+    pre .prompt { color: var(--teal-50); }
+    pre .flag { color: var(--orange-50); }
+
+    /* ═══════════════════════════════════════
+       YAML BLOCKS
+       ═══════════════════════════════════════ */
+
+    pre .key { color: var(--teal-30); }
+    pre .string { color: var(--orange-50); }
+    pre .number { color: var(--teal-50); }
+
+    /* ═══════════════════════════════════════
+       DETAIL LISTS
+       ═══════════════════════════════════════ */
+
+    .details {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .details li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--gray-40);
+    }
+
+    .details li:first-child {
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .details .dt {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.8rem;
+      color: var(--gray-20);
+    }
+
+    /* ═══════════════════════════════════════
+       SUBSECTIONS
+       ═══════════════════════════════════════ */
+
+    .sub-heading {
+      font-family: 'Red Hat Display', Arial Black, sans-serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--white);
+      margin: 2.5rem 0 1rem;
+    }
+
+    .sub-heading:first-of-type {
+      margin-top: 0;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: var(--gray-60);
+      line-height: 1.6;
+      margin-top: -0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ═══════════════════════════════════════
+       ECOSYSTEM TABLE
+       ═══════════════════════════════════════ */
+
+    .eco-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .eco-item {
+      background: var(--black);
+      padding: 1.25rem 1.5rem;
+    }
+
+    .alt .eco-item {
+      background: var(--gray-80);
+    }
+
+    .eco-name {
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+
+    .eco-desc {
+      font-size: 0.85rem;
+      color: var(--gray-40);
+    }
+
+    /* ═══════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════ */
+
+    footer {
+      padding: 2.5rem 0;
+      text-align: center;
+      font-family: 'Red Hat Mono', Consolas, monospace;
+      font-size: 0.75rem;
+      color: var(--gray-60);
+      letter-spacing: 0.03em;
+    }
+
+    footer a { color: var(--gray-40); }
+    footer a:hover { color: var(--white); }
+
+    /* ═══════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════ */
+
+    @media (max-width: 600px) {
+      .hero { padding: 4rem 0 3rem; }
+      .use-case { padding: 3.5rem 0; }
+      .hero-meta { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="container">
+      <a href="/" class="hero-back">&larr; bobbyjohnstx.github.io</a>
+      <h1 class="hero-heading"><span class="tiny">tiny</span><span class="code">code</span></h1>
+      <p class="hero-desc">A local-LLM-first AI coding assistant. Runs air-gapped with zero cloud dependencies. Terminal UI, web UI, or desktop app &mdash; against Ollama, vLLM, or any OpenAI-compatible endpoint.</p>
+      <div class="hero-meta">
+        <a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">container</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <a href="https://github.com/bobbyjohnstx/tinycode-operator" target="_blank" rel="noopener">operator</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+
+    <!-- USE CASE 1: Local Development -->
+    <section class="use-case">
+      <div class="container">
+        <div class="case-label">Run Locally</div>
+        <h2 class="case-title">tinycode</h2>
+        <p class="case-repo"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">github.com/bobbyjohnstx/tinycode</a></p>
+        <p class="case-desc">The core application. Includes the TUI, web UI, desktop app, built-in agents, skills, and LLM provider integrations. Everything you need to run tinycode on your workstation.</p>
+
+        <h3 class="sub-heading">Quick start</h3>
+<pre><span class="comment"># Install and run (requires Bun)</span>
+<span class="prompt">$</span> bun install
+<span class="prompt">$</span> bun dev
+
+<span class="comment"># Run against a specific project</span>
+<span class="prompt">$</span> bun dev /path/to/project
+
+<span class="comment"># Start the web UI</span>
+<span class="prompt">$</span> bun dev web
+<span class="comment"># → http://localhost:4096</span></pre>
+
+        <h3 class="sub-heading">Connect an LLM</h3>
+        <p class="note">tinycode auto-discovers Ollama on localhost:11434 and vLLM on localhost:8000 at startup.</p>
+<pre><span class="comment"># Point to a LAN model-as-a-service server</span>
+<span class="prompt">$</span> export TINYCODE_MAAS_HOST=<span class="string">https://your-maas-server</span>
+<span class="prompt">$</span> export TINYCODE_MAAS_API_KEY=<span class="string">your-key</span>
+
+<span class="comment"># Or configure in ~/.config/tinycode/config.json</span>
+{ "<span class="key">model</span>": "<span class="string">ollama/llama3.2</span>" }</pre>
+
+        <h3 class="sub-heading">Interfaces</h3>
+        <ul class="details">
+          <li><span class="dt">TUI</span> &mdash; primary interface. Full interactive session in your terminal with conversation history, model switching, agents, and tool approval.</li>
+          <li><span class="dt">Web UI</span> &mdash; SolidJS + TailwindCSS. Same capabilities in a browser at localhost:4096.</li>
+          <li><span class="dt">Desktop</span> &mdash; Electron app for macOS, Windows, and Linux. Run <code>bun run --cwd packages/desktop dev</code>.</li>
+        </ul>
+
+        <h3 class="sub-heading">What's included</h3>
+        <ul class="details">
+          <li><span class="dt">20+ built-in agents</span> &mdash; architect, debugger, code-reviewer, security-reviewer, planner, test-engineer, and more. Invoke with <code>/ask &lt;agent&gt;</code>.</li>
+          <li><span class="dt">Skills</span> &mdash; slash commands for specialized tasks: <code>/debug</code>, <code>/trace</code>, <code>/verify</code>, <code>/deepinit</code>, <code>/mcp-setup</code>.</li>
+          <li><span class="dt">oh-my-tiny plugin</span> &mdash; extended orchestration tools, notepad, wiki, project memory, and AST grep.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- USE CASE 2: Container -->
+    <section class="use-case alt">
+      <div class="container">
+        <div class="case-label">Run in a Container</div>
+        <h2 class="case-title">tinycode-container</h2>
+        <p class="case-repo"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">github.com/bobbyjohnstx/tinycode-container</a></p>
+        <p class="case-desc">Packages tinycode with oh-my-tiny, tmux, and git into a single OCI image. Built on <strong>UBI9-minimal</strong>, OpenShift-compatible with arbitrary UID support. Multi-arch (amd64 + arm64).</p>
+
+        <h3 class="sub-heading">One-line install</h3>
+<pre><span class="prompt">$</span> curl <span class="flag">-fsSL</span> https://raw.githubusercontent.com/bjohns/tinycode-container/main/install.sh | sh
+
+<span class="comment"># Installs a `tinycode` wrapper that manages the container lifecycle.</span>
+<span class="comment"># First run pulls the image; subsequent runs attach instantly.</span>
+<span class="comment"># Uninstall: tinycode --uninstall</span></pre>
+
+        <h3 class="sub-heading">Or run directly with Podman / Docker</h3>
+<pre><span class="comment"># Basic — Ollama on the host network</span>
+<span class="prompt">$</span> podman run <span class="flag">-it</span> <span class="flag">--network</span> host \
+  <span class="flag">-e</span> TINYCODE_SERVER_PASSWORD=<span class="string">changeme</span> \
+  quay.io/bjohns/tinycode-container:latest
+
+<span class="comment"># With a remote vLLM endpoint</span>
+<span class="prompt">$</span> podman run <span class="flag">-it</span> <span class="flag">-p</span> 4096:4096 \
+  <span class="flag">-e</span> TINYCODE_VLLM_URL=<span class="string">http://your-vllm-server:8000</span> \
+  <span class="flag">-e</span> TINYCODE_SERVER_PASSWORD=<span class="string">changeme</span> \
+  quay.io/bjohns/tinycode-container:latest
+
+<span class="comment"># With persistent storage</span>
+<span class="prompt">$</span> podman run <span class="flag">-d</span> <span class="flag">-p</span> 4096:4096 \
+  <span class="flag">-v</span> tinycode-data:/home/tinycode/.local/share/tinycode \
+  <span class="flag">-v</span> tinycode-config:/home/tinycode/.config/tinycode \
+  quay.io/bjohns/tinycode-container:latest</pre>
+
+        <h3 class="sub-heading">Deploy to OpenShift with Kustomize</h3>
+<pre><span class="comment"># Base deployment (Deployment + Service + Route)</span>
+<span class="prompt">$</span> kubectl apply <span class="flag">-k</span> k8s/base
+
+<span class="comment"># Ephemeral (no PVC — testing only)</span>
+<span class="prompt">$</span> kubectl apply <span class="flag">-k</span> k8s/overlays/ephemeral</pre>
+
+        <h3 class="sub-heading">Features</h3>
+        <ul class="details">
+          <li><span class="dt">GitOps mode</span> &mdash; clone a repo on startup via <code>TINYCODE_GIT_REPO</code> with optional auto-pull on restart.</li>
+          <li><span class="dt">vLLM auto-config</span> &mdash; set <code>TINYCODE_VLLM_URL</code> to auto-configure endpoint and model.</li>
+          <li><span class="dt">Cluster-admin mode</span> &mdash; <code>TINYCODE_CLUSTER_ADMIN=true</code> downloads oc CLI for cluster management.</li>
+          <li><span class="dt">Swarm tool</span> &mdash; includes tmux for supervised multi-worker sessions with shared persistence.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- USE CASE 3: Operator -->
+    <section class="use-case">
+      <div class="container">
+        <div class="case-label">Deploy on OpenShift</div>
+        <h2 class="case-title">tinycode-operator</h2>
+        <p class="case-repo"><a href="https://github.com/bobbyjohnstx/tinycode-operator" target="_blank" rel="noopener">github.com/bobbyjohnstx/tinycode-operator</a></p>
+        <p class="case-desc">A Kubernetes Operator for OpenShift that manages <strong>TinycodeInstance</strong> custom resources. Handles deployment, PVC provisioning, Route creation, SCC binding, and vLLM auto-probing. Reduces a full deployment to a single CR.</p>
+
+        <h3 class="sub-heading">Install the operator</h3>
+<pre><span class="prompt">$</span> git clone https://github.com/bobbyjohnstx/tinycode-operator
+<span class="prompt">$</span> cd tinycode-operator
+
+<span class="comment"># Build and push the operator image</span>
+<span class="prompt">$</span> make push IMAGE_ORG=<span class="string">yourorg</span> IMAGE_TAG=<span class="string">v0.1.0</span>
+
+<span class="comment"># Install on the cluster (cluster-admin required)</span>
+<span class="prompt">$</span> make install OPERATOR_IMAGE=<span class="string">quay.io/yourorg/operator:v0.1.0</span></pre>
+
+        <h3 class="sub-heading">Create a TinycodeInstance</h3>
+<pre><span class="comment"># Create namespace and password secret</span>
+<span class="prompt">$</span> oc new-project tinycode-dev
+<span class="prompt">$</span> oc create secret generic tinycode-password \
+  <span class="flag">--from-literal</span>=TINYCODE_SERVER_PASSWORD=<span class="string">mysecretpass</span>
+
+<span class="comment"># Apply the CR</span>
+<span class="prompt">$</span> oc apply <span class="flag">-f</span> - <span class="string">&lt;&lt;EOF</span></pre>
+<pre><span class="key">apiVersion</span>: tinycode.dev/v1alpha1
+<span class="key">kind</span>: TinycodeInstance
+<span class="key">metadata</span>:
+  <span class="key">name</span>: my-tinycode
+<span class="key">spec</span>:
+  <span class="key">vllm</span>:
+    - <span class="key">name</span>: <span class="string">vllm-qwen3</span>
+      <span class="key">url</span>: <span class="string">http://qwen3-30b.qwen3.svc.cluster.local:8080</span>
+  <span class="key">model</span>: <span class="string">"vllm-qwen3/qwen3-30b"</span>
+  <span class="key">auth</span>:
+    <span class="key">passwordSecret</span>: <span class="string">tinycode-password</span>
+  <span class="key">storage</span>:
+    <span class="key">projectsSize</span>: <span class="string">"20Gi"</span></pre>
+
+<pre><span class="comment"># Check status</span>
+<span class="prompt">$</span> oc get tinycodeinstances
+NAME          READY   URL                                       AGE
+my-tinycode   True    https://my-tinycode-tinycode-dev...        5m</pre>
+
+        <h3 class="sub-heading">Security contexts</h3>
+        <p class="note">The operator installs three SCCs, applied automatically based on the CR spec.</p>
+        <ul class="details">
+          <li><span class="dt">tinycode-restricted</span> &mdash; default. Non-root (UID 1001), all capabilities dropped.</li>
+          <li><span class="dt">tinycode-hostpath</span> &mdash; when <code>spec.storage.hostPath</code> is set. Adds hostPath mount, requires cluster-admin approval.</li>
+          <li><span class="dt">tinycode-shell</span> &mdash; when <code>spec.shell.enabled: true</code>. Adds hostPID + SYS_PTRACE for host shell access. Requires review.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ECOSYSTEM -->
+    <section class="use-case alt">
+      <div class="container">
+        <div class="case-label">Ecosystem</div>
+        <h2 class="case-title">Three projects, one stack</h2>
+        <p class="case-desc">tinycode is designed as a layered system. Use whichever level fits your environment.</p>
+
+        <div class="eco-grid">
+          <div class="eco-item">
+            <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a></div>
+            <div class="eco-desc">Core server, TUI, web UI, desktop app, agents, skills, tools, and LLM provider integrations.</div>
+          </div>
+          <div class="eco-item">
+            <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">tinycode-container</a></div>
+            <div class="eco-desc">OCI container image. UBI9-minimal, multi-arch, OpenShift arbitrary-UID compatible. Adds GitOps, vLLM auto-config, cluster-admin mode.</div>
+          </div>
+          <div class="eco-item">
+            <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-operator" target="_blank" rel="noopener">tinycode-operator</a></div>
+            <div class="eco-desc">Kubernetes Operator for OpenShift. Manages TinycodeInstance CRs with Helm-based reconciliation, SCCs, Routes, PVCs, and vLLM auto-probing.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <a href="/">bobbyjohnstx.github.io</a> &middot; <a href="https://github.com/bobbyjohnstx" target="_blank" rel="noopener">github.com/bobbyjohnstx</a>
+    </div>
+  </footer>
+
+</body>
+</html>
