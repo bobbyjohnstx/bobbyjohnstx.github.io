@@ -230,6 +230,7 @@
     .lang-java { background: #b07219; }
     .lang-docker { background: #384d54; }
     .lang-html { background: #e34c26; }
+    .lang-ruby { background: #701516; }
 
     .repo-star {
       display: flex;
@@ -460,7 +461,7 @@
     <section class="tinycode">
       <div class="container">
         <h2 class="tinycode-heading"><span class="tiny">tiny</span><span class="code">code</span></h2>
-        <p class="tinycode-sub">A slim, local-LLM-first AI coding assistant. TUI, web UI, and desktop app. Runs air-gapped with Ollama, vLLM, or any OpenAI-compatible endpoint.</p>
+        <p class="tinycode-sub">A slim, local-LLM-first AI coding assistant. Terminal UI, web UI, desktop app, and IDE integration. <code style="color:var(--teal-30)">brew install bobbyjohnstx/tap/tinycode</code></p>
         <div class="tinycode-repos">
           <a href="/tinycode.html">Getting started</a>
           <span class="separator" aria-hidden="true">/</span>
@@ -483,7 +484,7 @@
               <span class="repo-name">tinycode</span>
               <span class="repo-meta">
                 <span class="repo-lang"><span class="lang-dot lang-ts" aria-hidden="true"></span> TypeScript</span>
-                <span class="repo-star"><svg viewBox="0 0 16 16" fill="var(--orange-50)" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg> 1</span>
+                <span class="repo-star"><svg viewBox="0 0 16 16" fill="var(--orange-50)" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg> 8</span>
               </span>
             </div>
             <p class="repo-desc">A slim, local-LLM-first AI coding assistant. TUI, web UI, and desktop app. Runs air-gapped with Ollama, vLLM, or any OpenAI-compatible endpoint.</p>
@@ -509,6 +510,16 @@
               </span>
             </div>
             <p class="repo-desc">Kubernetes Operator for managing tinycode instances on OpenShift. Declarative vLLM config, cross-namespace discovery, GitOps, shared workspaces.</p>
+          </a>
+
+          <a href="https://github.com/bobbyjohnstx/homebrew-tap" class="repo-item" role="listitem" target="_blank" rel="noopener">
+            <div class="repo-header">
+              <span class="repo-name">homebrew-tap</span>
+              <span class="repo-meta">
+                <span class="repo-lang"><span class="lang-dot lang-ruby" aria-hidden="true"></span> Ruby</span>
+              </span>
+            </div>
+            <p class="repo-desc">Homebrew formula for installing tinycode via <code>brew install</code>.</p>
           </a>
 
           <a href="https://github.com/bobbyjohnstx/ztp-gitops" class="repo-item" role="listitem" target="_blank" rel="noopener">
