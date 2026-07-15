@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tinycode — Getting Started</title>
+  <meta name="description" content="tinycode — a slim, local-LLM-first AI coding assistant. TUI, web UI, desktop app, and IDE integration. Getting started guides for local, container, and OpenShift deployment.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;600&display=swap" rel="stylesheet">
@@ -102,7 +103,7 @@
 
     .hero-meta a { color: var(--teal-30); }
     .hero-meta a:hover { color: var(--white); }
-    .hero-meta .sep { color: var(--gray-60); }
+    .hero-meta .sep { color: var(--gray-40); }
 
     /* ═══ SECTIONS ═══ */
 
@@ -344,9 +345,11 @@
 </head>
 <body>
 
+  <main>
+
   <section class="hero">
     <div class="container">
-      <a href="/" class="hero-back">&larr; bobbyjohnstx.github.io</a>
+      <a href="/" class="hero-back" aria-label="Back to homepage">&larr; bobbyjohnstx.github.io</a>
       <h1 class="hero-heading"><span class="tiny">tiny</span><span class="code">code</span></h1>
       <p class="hero-desc">A slim, local-LLM-first AI coding assistant. Runs air-gapped against your own LLMs &mdash; Ollama, vLLM, or any OpenAI-compatible endpoint. Cloud providers supported as a secondary option.</p>
       <div class="hero-meta">
@@ -361,13 +364,12 @@
     </div>
   </section>
 
-  <main>
-
     <!-- ═══════════════════════════════════════ INSTALL ═══ -->
     <section class="sec alt">
       <div class="container">
         <div class="sec-label">Install</div>
         <h2 class="sec-title">Three ways to start</h2>
+        <p class="sec-desc">Homebrew for local dev. Container for teams. Operator for platform engineering.</p>
         <div class="install-grid">
           <div class="install-option">
             <div class="install-label">Homebrew</div>
@@ -388,8 +390,52 @@
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════ TUI ═══ -->
+    <!-- ═══════════════════════════════════════ FIRST 5 MINUTES ═══ -->
     <section class="sec">
+      <div class="container">
+        <div class="sec-label">First 5 Minutes</div>
+        <h2 class="sec-title">Install, run, build something</h2>
+        <p class="sec-desc">Four workflows that show what tinycode does in practice. Copy-paste these into your terminal after installing.</p>
+
+        <h3 class="sub" style="margin-top:0">Debug a failing test</h3>
+<pre><span class="p">$</span> tinycode /path/to/project
+
+<span class="c"># In the TUI, type:</span>
+The test in auth_test.go is failing with "token expired."
+Find the root cause and fix it.
+
+<span class="c"># Or use the debug skill directly:</span>
+/debug auth_test.go is failing with "token expired"</pre>
+
+        <h3 class="sub">Plan a feature before writing code</h3>
+<pre><span class="c"># Switch to plan mode — read-only, safe to explore</span>
+<span class="p">$</span> tinycode /path/to/project
+
+<span class="c"># Press Tab to switch to the plan agent, then:</span>
+Add a /health endpoint that returns pod name,
+uptime, and connected LLM providers.
+
+<span class="c"># tinycode writes a plan to .tinycode/plans/</span>
+<span class="c"># Review it, approve, switch to build mode to execute</span></pre>
+
+        <h3 class="sub">Review a pull request</h3>
+<pre><span class="p">$</span> tinycode /path/to/project
+
+<span class="c"># Ask the code-reviewer agent:</span>
+/ask code-reviewer Review the diff on the current branch
+against main. Focus on correctness and security.</pre>
+
+        <h3 class="sub">Explore an unfamiliar codebase</h3>
+<pre><span class="p">$</span> tinycode /path/to/new-project
+
+<span class="c"># Ask the architect agent:</span>
+/ask architect How is authentication handled in this project?
+Trace from the HTTP handler to the token validation.</pre>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════ TUI ═══ -->
+    <section class="sec alt">
       <div class="container">
         <div class="sec-label">Terminal UI</div>
         <h2 class="sec-title">The primary interface</h2>
@@ -426,7 +472,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════ WEB & DESKTOP ═══ -->
-    <section class="sec alt">
+    <section class="sec">
       <div class="container">
         <div class="sec-label">Web UI &amp; Desktop</div>
         <h2 class="sec-title">Browser and native app</h2>
@@ -449,7 +495,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════ IDE ═══ -->
-    <section class="sec">
+    <section class="sec alt">
       <div class="container">
         <div class="sec-label">IDE Integration</div>
         <h2 class="sec-title">Agent Client Protocol</h2>
@@ -466,10 +512,10 @@
     </section>
 
     <!-- ═══════════════════════════════════════ AGENTS & SKILLS ═══ -->
-    <section class="sec alt">
+    <section class="sec">
       <div class="container">
         <div class="sec-label">Agents &amp; Skills</div>
-        <h2 class="sec-title">24 agents, 9 skills</h2>
+        <h2 class="sec-title">23 agents, 9 skills</h2>
         <p class="sec-desc">All agents share build-mode tool permissions but have specialized system prompts. Agents with a <code>.compact.md</code> variant automatically use a lighter prompt for models &le;8B parameters.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
@@ -516,7 +562,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════ CONTAINER ═══ -->
-    <section class="sec">
+    <section class="sec alt">
       <div class="container">
         <div class="sec-label">Container</div>
         <h2 class="sec-title">tinycode-container</h2>
@@ -551,7 +597,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════ OPERATOR ═══ -->
-    <section class="sec alt">
+    <section class="sec">
       <div class="container">
         <div class="sec-label">Operator</div>
         <h2 class="sec-title">tinycode-operator</h2>
@@ -608,7 +654,7 @@
     </section>
 
     <!-- ═══════════════════════════════════════ ECOSYSTEM ═══ -->
-    <section class="sec">
+    <section class="sec alt">
       <div class="container">
         <div class="sec-label">Ecosystem</div>
         <h2 class="sec-title">Four projects, one stack</h2>
@@ -632,6 +678,8 @@
             <div class="eco-desc">Homebrew formula for <code>brew install bobbyjohnstx/tap/tinycode</code> on macOS and Linux.</div>
           </div>
         </div>
+
+        <p class="sec-desc" style="margin-bottom:0">Built on <a href="https://github.com/sst/opencode" target="_blank" rel="noopener">opencode</a> by <a href="https://github.com/sst" target="_blank" rel="noopener">SST</a>. The core architecture &mdash; session processor, provider abstraction, tool system, and TUI &mdash; originates from the opencode project.</p>
       </div>
     </section>
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal GitHub Pages site for Bobby Johns (bobbyjohnstx.github.io). Single-page static site — one `index.html` file with inline CSS, no build step, no JavaScript, no frameworks.
+Personal GitHub Pages site for Bobby Johns (bobbyjohnstx.github.io). Static site with two HTML files (`index.html` and `tinycode.html`), inline CSS, no build step, no JavaScript, no frameworks.
 
 ## Development
 
