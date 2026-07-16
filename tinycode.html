@@ -351,7 +351,7 @@
     <div class="container">
       <a href="/" class="hero-back" aria-label="Back to homepage">&larr; bobbyjohnstx.github.io</a>
       <h1 class="hero-heading"><span class="tiny">tiny</span><span class="code">code</span></h1>
-      <p class="hero-desc">A slim, local-LLM-first AI coding assistant. Runs air-gapped against your own LLMs &mdash; Ollama, vLLM, or any OpenAI-compatible endpoint. Cloud providers supported as a secondary option.</p>
+      <p class="hero-desc">A slim, local-LLM-first AI coding assistant. Runs air-gapped against your own LLMs &mdash; Ollama, ramalama, vLLM, or any OpenAI-compatible endpoint. Cloud providers supported as a secondary option.</p>
       <div class="hero-meta">
         <a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a>
         <span class="sep">/</span>
@@ -457,13 +457,17 @@ Trace from the HTTP handler to the token validation.</pre>
         <ul class="details">
           <li><span class="dt">Session tree sidebar</span> (<code>&lt;leader&gt;b</code>) &mdash; toggleable ASCII tree showing session hierarchy organized by parent-child relationships.</li>
           <li><span class="dt">Agent switching</span> (<code>Tab</code> or <code>&lt;leader&gt;a</code>) &mdash; cycle through agents or pick from a list. Use <code>/ask &lt;agent&gt;</code> for one-shot subagent invocations.</li>
-          <li><span class="dt">Model switching</span> &mdash; change models mid-conversation. Auto-discovers Ollama, vLLM, and MaaS providers at startup. Use <code>/connect</code> to add providers manually.</li>
+          <li><span class="dt">Model switching</span> &mdash; change models mid-conversation. Auto-discovers Ollama, vLLM, ramalama, and MaaS providers at startup. Warms up local models on startup with tool-call verification.</li>
           <li><span class="dt">Session export</span> &mdash; <code>tinycode export --format html &lt;session-id&gt;</code> exports to self-contained HTML for sharing.</li>
         </ul>
 
         <h3 class="sub">Configuration</h3>
 <pre><span class="c"># ~/.config/tinycode/config.json</span>
-{ "<span class="k">model</span>": "<span class="s">ollama/llama3.2</span>", "<span class="k">lsp</span>": true }
+{ "<span class="k">model</span>": "<span class="s">ollama/qwen3.5:9b</span>", "<span class="k">lsp</span>": true }
+
+<span class="c"># Or use ramalama (container-based LLM serving)</span>
+<span class="p">$</span> ramalama serve ollama://qwen3.5:9b
+<span class="p">$</span> export TINYCODE_RAMALAMA_HOST=<span class="s">http://localhost:8080</span>
 
 <span class="c"># Or connect to a LAN model-as-a-service server</span>
 <span class="p">$</span> export TINYCODE_MAAS_HOST=<span class="s">https://your-maas-server</span>
@@ -516,7 +520,7 @@ Trace from the HTTP handler to the token validation.</pre>
       <div class="container">
         <div class="sec-label">Agents &amp; Skills</div>
         <h2 class="sec-title">23 agents, 9 skills</h2>
-        <p class="sec-desc">All agents share build-mode tool permissions but have specialized system prompts. Agents with a <code>.compact.md</code> variant automatically use a lighter prompt for models &le;8B parameters.</p>
+        <p class="sec-desc">Each agent has per-agent tool permissions &mdash; read-only agents get only the tools they need (~4 tools), write agents get edit access (~7 tools). This reduces prompt processing time by 80-90% on local models. Agents with a <code>.compact.md</code> variant automatically use a lighter prompt for models &le;8B parameters.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
         <div class="agent-grid">
@@ -556,8 +560,17 @@ Trace from the HTTP handler to the token validation.</pre>
           <li><span class="dt">/mcp-setup</span> &mdash; configure MCP servers via guided menu</li>
           <li><span class="dt">/remember</span> &mdash; triage session findings across memory surfaces</li>
           <li><span class="dt">/configure-notifications</span> &mdash; set up Telegram, Discord, or Slack notifications</li>
-          <li><span class="dt">/tc-doctor</span> &mdash; diagnose tinycode configuration and environment issues</li>
+          <li><span class="dt">/tc-doctor</span> &mdash; diagnose tinycode configuration and environment issues (14 checks, pure bash)</li>
         </ul>
+
+        <h3 class="sub">CLI commands</h3>
+        <ul class="details">
+          <li><span class="dt">tinycode plugin-search [query]</span> &mdash; search available plugins in the curated registry</li>
+          <li><span class="dt">tinycode plugin &lt;name&gt;</span> &mdash; install a plugin (resolves registry names or npm specifiers)</li>
+        </ul>
+
+        <h3 class="sub">API documentation</h3>
+        <p class="note">When tinycode is running, visit <code>http://localhost:4096/api/docs</code> for interactive API reference (Scalar UI, 114 endpoints). Raw spec at <code>/api/openapi.json</code>.</p>
       </div>
     </section>
 
