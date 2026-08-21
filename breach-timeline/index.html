@@ -598,43 +598,55 @@ body {
   margin-bottom: var(--space-sm);
 }
 
-/* Default vs. configured badges */
+/* Default vs. configured badges - flat inline labels, not buttons */
 .default-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 3px;
+  display: inline;
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-left: 6px;
-  vertical-align: middle;
+  letter-spacing: 0.6px;
+  margin-left: 4px;
+  margin-right: 2px;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
 }
 
 .default-badge.by-default {
-  background: rgba(55, 163, 163, 0.18);
-  border: 1px solid rgba(55, 163, 163, 0.35);
   color: var(--teal-30);
 }
 
 .default-badge.by-default::before {
-  content: '\2713';
-  font-size: 10px;
+  content: '\2713\00a0';
+  font-size: 9px;
 }
 
 .default-badge.add-on {
-  background: rgba(245, 146, 27, 0.12);
-  border: 1px solid rgba(245, 146, 27, 0.3);
   color: var(--orange-30);
 }
 
 .default-badge.requires-config {
-  background: rgba(255, 224, 114, 0.1);
-  border: 1px solid rgba(255, 224, 114, 0.25);
   color: var(--yellow-30);
+}
+
+/* Legend badges get subtle background since they stand alone */
+.legend-item .default-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.legend-item .default-badge.by-default {
+  background: rgba(55, 163, 163, 0.12);
+}
+
+.legend-item .default-badge.add-on {
+  background: rgba(245, 146, 27, 0.08);
+}
+
+.legend-item .default-badge.requires-config {
+  background: rgba(255, 224, 114, 0.07);
 }
 
 /* Agent quotes */
