@@ -869,6 +869,79 @@ body {
 }
 
 /* Blocked cascade */
+/* Residual position - what the attacker still has */
+.residual-position {
+  max-width: 760px;
+  margin: var(--space-xl) auto 0;
+  padding: var(--space-lg);
+  background: rgba(245, 146, 27, 0.06);
+  border: 1px solid rgba(245, 146, 27, 0.2);
+  border-radius: 8px;
+}
+
+.residual-position h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--orange-30);
+  margin-bottom: var(--space-sm);
+}
+
+.residual-position p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.residual-position p:last-child {
+  margin-bottom: 0;
+}
+
+.residual-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.residual-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(245, 146, 27, 0.04);
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.residual-item::before {
+  content: '\26A0';
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.residual-item strong {
+  color: var(--orange-30);
+}
+
+.residual-callout {
+  margin-top: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(255, 224, 114, 0.06);
+  border-left: 3px solid var(--yellow-30);
+  border-radius: 0 6px 6px 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.residual-callout strong {
+  color: var(--yellow-30);
+}
+
 .blocked-cascade {
   max-width: 760px;
   margin: var(--space-xl) auto 0;
@@ -1549,6 +1622,21 @@ body {
     <p>
       This holds for self-managed OpenShift AND ROSA (Red Hat OpenShift Service on AWS) - both Classic and HCP. ROSA with STS <span class="default-badge by-default">By default</span> further scopes node IAM roles to least-privilege with 1-hour credential expiry. On ROSA HCP, the API server runs in Red Hat's AWS account via PrivateLink <span class="default-badge by-default">By default</span> - entirely outside the customer's blast radius.
     </p>
+  </div>
+
+  <div class="residual-position">
+    <h3>What the Attacker Retains</h3>
+    <p>The chain break stops the infrastructure catastrophe. It does not eliminate the attacker. After the 401, this is what remains - a contained pod-level compromise, not cluster-admin, but not nothing.</p>
+    <div class="residual-items">
+      <div class="residual-item"><strong>Code execution</strong> - non-root, inside the pod. SCC is admission-time; it does not block runtime execve.</div>
+      <div class="residual-item"><strong>Leaked credentials</strong> - environment variables readable via /proc/self/environ. No root required.</div>
+      <div class="residual-item"><strong>SA token</strong> - projected token mounted automatically, readable without audit log entry. 1-year validity on non-STS clusters.</div>
+      <div class="residual-item"><strong>EC2 IAM credentials</strong> - node-role credentials from IMDS (169.254.169.254). 1-hour expiry, but renewable while the pod runs.</div>
+      <div class="residual-item"><strong>Unrestricted egress</strong> - no default egress NetworkPolicy. C2 channels, exfiltration, and IMDS access all work.</div>
+    </div>
+    <div class="residual-callout">
+      <strong>Most consequential gap: egress.</strong> The attacker's C2 channels, credential exfiltration, and EC2 metadata access all depend on unrestricted outbound connectivity from the pod. Egress NetworkPolicy <span class="default-badge requires-config">Requires config</span> is the single highest-impact hardening step.
+    </div>
   </div>
 
   <div class="blocked-cascade">
