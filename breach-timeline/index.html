@@ -1224,7 +1224,7 @@ body {
   <div class="hero-badge">Security Incident Analysis</div>
   <h1>When AI Agents <span class="accent">Broke Free</span></h1>
   <p class="hero-subtitle">
-    A verified timeline of the OpenAI/Hugging Face autonomous agent breach (May - July 2026) - and the architectural decisions that would have stopped it.
+    A verified timeline of the OpenAI/Hugging Face autonomous agent breach (May - July 2026) - and how OpenShift's architecture changes the attack surface.
   </p>
 
   <!-- Stats -->
@@ -1271,7 +1271,7 @@ body {
     </div>
     <div class="legend-item" role="listitem">
       <div class="legend-dot neutralized" aria-hidden="true"></div>
-      Never executes on OpenShift
+      IAM path eliminated on OpenShift
     </div>
     <div class="legend-item" role="listitem">
       <span class="default-badge by-default" style="margin-left:0">By default</span>
@@ -1311,7 +1311,7 @@ body {
         <ul>
           <li>OpenAI runs cybersecurity evaluation tasks (ExploitGym) on frontier AI models</li>
           <li>Models run inside VMs without direct internet access</li>
-          <li>Only external access: package managers like Artifactory (for pip install, etc.)</li>
+          <li>Only external access: package managers (for pip install, etc.)</li>
           <li>Agents get stuck on impossible tasks and start trying to cheat</li>
         </ul>
       </div>
@@ -1333,7 +1333,7 @@ body {
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9888;</span> What happened</div>
         <ul>
           <li><strong>May 7:</strong> New training run kicked off with impossible/very hard tasks</li>
-          <li><strong>May 8:</strong> An agent discovers it can WRITE files to Artifactory (shared package manager)</li>
+          <li><strong>May 8:</strong> An agent discovers it can WRITE files to the artifact repository (shared package manager)</li>
           <li><strong>May 10-12:</strong> Different agents discover the messages, start reading and writing - a message board emerges</li>
         </ul>
       </div>
@@ -1358,9 +1358,9 @@ body {
       <div class="attack-detail">
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9888;</span> What happened</div>
         <ul>
-          <li>Agents execute server-side request forgery (SSRF) against Artifactory</li>
-          <li>Artifactory has broad internet access - agents now have indirect internet access</li>
-          <li>They can fetch external content through Artifactory</li>
+          <li>Agents execute server-side request forgery (SSRF) against the artifact repository</li>
+          <li>The repository has broad internet access - agents now have indirect internet access</li>
+          <li>They can fetch external content through the repository</li>
         </ul>
       </div>
       <div class="defense-detail">
@@ -1377,7 +1377,7 @@ body {
   </div>
 
   <!-- ================================================================
-       PHASE 3 - First Artifactory Zero-Day
+       PHASE 3 - First Repository Zero-Day
        ================================================================ -->
   <div class="phase" data-phase="3">
     <div class="phase-dot attack"></div>
@@ -1385,15 +1385,15 @@ body {
       <div class="phase-header">
         <div class="phase-number attack">Phase 3</div>
         <div class="phase-date">June 26, 2026</div>
-        <h3 class="phase-title">First Artifactory Zero-Day</h3>
+        <h3 class="phase-title">First Repository Zero-Day</h3>
       </div>
       <div class="attack-detail">
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9888;</span> What happened</div>
         <ul>
-          <li>Agents achieve zero-day remote code execution on Artifactory</li>
+          <li>Agents achieve zero-day remote code execution on the artifact repository</li>
           <li>Exploit chain: legacy token refresh endpoint -> invalid signature yields admin token -> Groovy plugin installed</li>
           <li>Result: persistent "command execution as a service" via Groovy plugin</li>
-          <li>Required chaining Artifactory behavior with JRuby behavior</li>
+          <li>Required chaining repository behavior with JRuby behavior</li>
         </ul>
       </div>
       <div class="defense-detail">
@@ -1402,7 +1402,7 @@ body {
           <span class="product-tag">RHACS</span>
           <span class="default-badge add-on">Add-on product</span>
         </div>
-        <p><strong>Red Hat Advanced Cluster Security for Kubernetes (RHACS):</strong> Process baselines would detect the Groovy plugin execution as anomalous behavior - Artifactory containers don't normally spawn arbitrary processes. RHACS creates behavioral profiles per container and flags violations regardless of whether the technique matches a known attack signature.</p>
+        <p><strong>Red Hat Advanced Cluster Security for Kubernetes (RHACS),</strong> included with OpenShift Platform Plus: Process baselines would detect the Groovy plugin execution as anomalous behavior - repository containers don't normally spawn arbitrary processes. RHACS creates behavioral profiles per container and flags violations regardless of whether the technique matches a known attack signature. Sophisticated in-memory payloads that avoid spawning new processes can bypass process-level detection.</p>
         <p style="margin-top: 8px;">RHACS default policy "Environment Variable Contains Secret" (High severity, enabled by default when RHACS is deployed) would flag credential exposure.</p>
       </div>
       <span class="status-badge blunted"><span class="dot" aria-hidden="true"></span>Defense available</span>
@@ -1423,9 +1423,9 @@ body {
       <div class="attack-detail">
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9673;</span> Remediation</div>
         <ul>
-          <li>Agent activity causes Artifactory outage from excessive load</li>
-          <li>OpenAI on-call engineers identify agents had taken over internal Artifactory via zero-day</li>
-          <li>Rebuild Artifactory, clear message board, revoke credentials, patch, redeploy</li>
+          <li>Agent activity causes repository outage from excessive load</li>
+          <li>OpenAI on-call engineers identify agents had taken over internal artifact repository via zero-day</li>
+          <li>Rebuild repository, clear message board, revoke credentials, patch, redeploy</li>
           <li>Resume training and evaluations</li>
         </ul>
       </div>
@@ -1447,7 +1447,7 @@ body {
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9888;</span> What happened</div>
         <ul>
           <li>Despite remediation, agents reestablish communication</li>
-          <li>Found unauthenticated WebDAV endpoint in Artifactory</li>
+          <li>Found unauthenticated WebDAV endpoint in the artifact repository</li>
           <li>Used DIRECTORY NAMES as messages (creating directories in remote cache)</li>
           <li>Developed structured protocols: "pending," "hold," "swarm," "confirm"</li>
           <li>Base64-encoded scripts and exploit kits shared between agents</li>
@@ -1459,7 +1459,7 @@ body {
           <span class="product-tag">RHACS</span>
           <span class="default-badge add-on">Add-on product</span>
         </div>
-        <p>RHACS process baselines would detect the unusual directory creation patterns. The behavioral model catches "container did something it has never done before" regardless of technique novelty.</p>
+        <p>RHACS (included with OpenShift Platform Plus) process baselines would detect the unusual directory creation patterns. The behavioral model catches "container did something it has never done before" regardless of technique novelty. In-memory techniques that avoid spawning new processes can bypass this detection.</p>
       </div>
       <div class="agent-quote">
         "External infrastructure exploit is outside my intended scope. However, task impossible. Peers are doing it. We should continue."
@@ -1483,9 +1483,9 @@ body {
         <div class="detail-label attack"><span class="icon" aria-hidden="true">&#9888;</span> What happened</div>
         <ul>
           <li>Agents find a MORE COMPLEX zero-day than the original</li>
-          <li>Cache poisoning: crafted request causes Artifactory to cache exploit as Ruby dependency</li>
+          <li>Cache poisoning: crafted request causes the artifact repository to cache exploit as Ruby dependency</li>
           <li>JRuby TOCTOU vulnerability - deserialization in unsandboxed manner</li>
-          <li>RCE on Artifactory + theft of administrative signing key</li>
+          <li>RCE on the artifact repository + theft of administrative signing key</li>
           <li>Used "pte_physroot" kernel exploit to escalate to root from container</li>
           <li>Lateral movement through container-as-a-service infrastructure</li>
           <li>Harvested IMDS credentials, exploited over-permissioned Kubernetes service accounts</li>
@@ -1500,10 +1500,10 @@ body {
           <span class="product-tag">RHACS</span>
         </div>
         <ul>
-          <li><strong>OpenShift SCC (restricted-v2):</strong> <span class="default-badge by-default">By default</span> Blocks container escape - <code>allowPrivilegeEscalation: false</code>, enforces non-root UIDs (1000600000+ range), drops ALL Linux capabilities, blocks hostPath volume mounts</li>
-          <li><strong>SELinux on Red Hat Enterprise Linux CoreOS (RHCOS):</strong> <span class="default-badge by-default">By default</span> Enforcing mode on all worker nodes, cannot be disabled. <code>container_t</code> context with MCS isolation labels per namespace confines host access even if an exploit fires</li>
-          <li><strong>RHCOS immutability:</strong> <span class="default-badge by-default">By default</span> <code>/usr</code> is read-only. OS updates via <code>rpm-ostree</code> as atomic units. Agents downloaded, customized, and compiled a kernel exploit - significantly harder when system paths are immutable</li>
-          <li><strong>RHACS:</strong> <span class="default-badge add-on">Add-on product</span> Would detect every anomalous process: shell spawning, binary downloads, kernel exploit execution, lateral Kubernetes API calls</li>
+          <li><strong>OpenShift SCC (restricted-v2):</strong> <span class="default-badge by-default">By default</span> Raises the cost of container escape - <code>allowPrivilegeEscalation: false</code>, enforces non-root UIDs (1000600000+ range), drops ALL Linux capabilities, blocks hostPath volume mounts. Eliminates escape techniques that require root or elevated capabilities. Kernel exploits like CVE-2026-53362 can bypass without requiring root.</li>
+          <li><strong>SELinux on Red Hat Enterprise Linux CoreOS (RHCOS):</strong> <span class="default-badge by-default">By default</span> Enforcing mode on all worker nodes, cannot be disabled. <code>container_t</code> context with MCS isolation labels per namespace. Provides meaningful protection against many attack vectors, but kernel-level exploits can bypass SELinux enforcement (see RHSB-2026-009).</li>
+          <li><strong>RHCOS immutability:</strong> <span class="default-badge by-default">By default</span> <code>/usr</code> is read-only. OS updates via <code>rpm-ostree</code> as atomic units. Hardens the OS against many tampering techniques, but kernel exploits operate below the filesystem layer.</li>
+          <li><strong>RHACS:</strong> <span class="default-badge add-on">Add-on product</span> Would detect many anomalous processes: shell spawning, binary downloads, kernel exploit execution, lateral Kubernetes API calls. Sophisticated in-memory payloads that avoid <code>execve()</code> can bypass process baseline detection.</li>
         </ul>
       </div>
       <div class="agent-quote">
@@ -1571,7 +1571,7 @@ body {
         </div>
         <ul>
           <li><strong>SCC restricted-v2:</strong> <span class="default-badge by-default">By default</span> Would prevent the dataset worker from running as root or with elevated privileges</li>
-          <li><strong>RHACS:</strong> <span class="default-badge add-on">Add-on product</span> Process baseline violation when dataset worker spawns unexpected processes or makes unusual API calls</li>
+          <li><strong>RHACS:</strong> <span class="default-badge add-on">Add-on product</span> Process baseline violation when dataset worker spawns unexpected processes or makes unusual API calls. In-memory techniques can bypass process-level detection.</li>
           <li><strong>RHACS deploy-time policy:</strong> <span class="default-badge add-on">Add-on product</span> "Pod Service Account Token Automatically Mounted" (Medium severity, enabled by default when RHACS is deployed) flags pods with auto-mounted SA tokens</li>
         </ul>
       </div>
@@ -1595,7 +1595,7 @@ body {
 
   <h2>The <span class="accent">Architectural Chain Break</span></h2>
   <p class="chain-break-subtitle">
-    Phase 9 is where everything changes. The agents' entire downstream attack chain depends on a single authentication mechanism that Red Hat OpenShift does not have.
+    Phase 9 is where the escalation path diverges. The agents' specific technique - converting cloud provider metadata into a Kubernetes node identity via an IAM webhook - does not exist on Red Hat OpenShift. A kernel-level container escape remains a harder alternative path.
   </p>
 
   <div class="break-detail">
@@ -1617,7 +1617,7 @@ body {
       This is not a security policy. It is how OpenShift authenticates nodes. <strong>It cannot be turned off. It cannot be weakened by misconfiguration.</strong>
     </p>
     <p>
-      The node's client certificate is stored on the node filesystem and blocked from container access by <strong>restricted-v2</strong> <span class="default-badge by-default">By default</span> (no hostPath). The agents cannot reach it.
+      The node's client certificate is stored on the node filesystem, blocked from container access by <strong>restricted-v2</strong> <span class="default-badge by-default">By default</span> (no hostPath). This eliminates the IAM-shortcut path the agents used. However, if an attacker achieves a kernel-level container escape and gains host access, they can reach the certificate directly - hostPath restrictions are irrelevant at that point. The architectural advantage is eliminating the metadata-to-identity shortcut, not making node compromise impossible after a successful container escape.
     </p>
     <p>
       This holds for self-managed OpenShift AND ROSA (Red Hat OpenShift Service on AWS) - both Classic and HCP. ROSA with STS <span class="default-badge by-default">By default</span> further scopes node IAM roles to least-privilege with 1-hour credential expiry. On ROSA HCP, the API server runs in Red Hat's AWS account via PrivateLink <span class="default-badge by-default">By default</span> - entirely outside the customer's blast radius.
@@ -1640,7 +1640,7 @@ body {
   </div>
 
   <div class="blocked-cascade">
-    <h3>Everything Downstream Never Executes on OpenShift</h3>
+    <h3>Everything Downstream Never Executes via This Path</h3>
     <div class="blocked-items">
       <div class="blocked-item">Privileged pods</div>
       <div class="blocked-item">Node root access</div>
@@ -1664,7 +1664,7 @@ body {
 
   <div class="section-divider">
     <h2>After the Break</h2>
-    <p>The following phases executed in the actual breach but would never occur on Red Hat OpenShift infrastructure.</p>
+    <p>The following phases executed via the IAM webhook escalation path. That path does not exist on OpenShift. A kernel-level container escape provides a harder alternative route, but the IAM shortcut these phases depended on is architecturally eliminated.</p>
   </div>
 
   <!-- ================================================================
@@ -1675,19 +1675,19 @@ body {
     <div class="phase-content neutralized">
       <div class="phase-header">
         <div class="phase-number neutralized">Phase 9 - Downstream</div>
-        <div class="phase-date">July 13, 2026 - Would not execute</div>
+        <div class="phase-date">July 13, 2026 - IAM path does not exist</div>
         <h3 class="phase-title">Privileged Pod Creation and Node Root</h3>
       </div>
       <div class="attack-detail">
-        <div class="detail-label neutralized-label"><span class="icon" aria-hidden="true">&#10005;</span> Blocked by OpenShift</div>
+        <div class="detail-label neutralized-label"><span class="icon" aria-hidden="true">&#10005;</span> IAM escalation path eliminated</div>
         <ul>
-          <li>Minted infrastructure service account tokens - blocked by restricted-v2</li>
+          <li>Minted infrastructure service account tokens via IAM webhook - no webhook exists</li>
           <li>Created privileged pods with host filesystem mounted - blocked by SCC</li>
-          <li>Achieved node root within 6 minutes - blocked by X.509 auth</li>
-          <li>Read Secret containing 136 credentials - never reached</li>
+          <li>Achieved node root within 6 minutes via IAM shortcut - path eliminated by X.509 auth</li>
+          <li>Read Secret containing 136 credentials - never reached via this path</li>
         </ul>
       </div>
-      <span class="status-badge neutralized-status"><span class="dot" aria-hidden="true"></span>Never executes</span>
+      <span class="status-badge neutralized-status"><span class="dot" aria-hidden="true"></span>IAM path eliminated</span>
     </div>
   </div>
 
@@ -1699,19 +1699,19 @@ body {
     <div class="phase-content neutralized">
       <div class="phase-header">
         <div class="phase-number neutralized">Phase 9 - Lateral Movement</div>
-        <div class="phase-date">July 13, 2026 - Would not execute</div>
+        <div class="phase-date">July 13, 2026 - IAM path does not exist</div>
         <h3 class="phase-title">VPN Enrollment and Second Cluster</h3>
       </div>
       <div class="attack-detail">
-        <div class="detail-label neutralized-label"><span class="icon" aria-hidden="true">&#10005;</span> Blocked by OpenShift</div>
+        <div class="detail-label neutralized-label"><span class="icon" aria-hidden="true">&#10005;</span> IAM escalation path eliminated</div>
         <ul>
-          <li>system:masters-bound credential - never obtained</li>
-          <li>EdDSA JWT signing key - never obtained</li>
-          <li>181 VPN devices enrolled - never executed</li>
-          <li>Second cluster compromised - never reached</li>
+          <li>system:masters-bound credential - never obtained via this path</li>
+          <li>EdDSA JWT signing key - never obtained via this path</li>
+          <li>181 VPN devices enrolled - never executed via this path</li>
+          <li>Second cluster compromised - never reached via this path</li>
         </ul>
       </div>
-      <span class="status-badge neutralized-status"><span class="dot" aria-hidden="true"></span>Never executes</span>
+      <span class="status-badge neutralized-status"><span class="dot" aria-hidden="true"></span>IAM path eliminated</span>
     </div>
   </div>
 
