@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agents Went Rogue During Training - Bobby Johns</title>
+<meta name="description" content="A security architect's walkthrough of the Black Hat 2026 AI agent breach chain - and pragmatic hardening steps for any Kubernetes environment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Red+Hat+Text:wght@400;500;600&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========================================================================
+   CSS CUSTOM PROPERTIES - Red Hat Brand Palette
+   ======================================================================== */
+:root {
+  /* Red scale */
+  --red-10: #fce3e3;
+  --red-20: #fbc5c5;
+  --red-30: #f9a8a8;
+  --red-40: #f56e6e;
+  --red-50: #ee0000;
+  --red-60: #a60000;
+  --red-70: #5f0000;
+
+  /* Neutrals */
+  --white: #ffffff;
+  --gray-10: #f0f0f0;
+  --gray-20: #e0e0e0;
+  --gray-40: #a3a3a3;
+  --gray-60: #4d4d4d;
+  --gray-80: #292929;
+  --black: #000000;
+
+  /* Extended palette */
+  --purple-70: #21134d;
+  --purple-50: #5e40be;
+  --orange-50: #f5921b;
+  --orange-30: #fccb8f;
+  --orange-10: #ffe8cc;
+  --teal-70: #004d4d;
+  --teal-50: #37a3a3;
+  --teal-30: #9ad8d8;
+  --teal-10: #daf2f2;
+  --yellow-30: #ffe072;
+
+  /* Semantic */
+  --bg-primary: #1a1a1a;
+  --bg-card: #242424;
+  --bg-card-hover: #2c2c2c;
+  --bg-surface: #1e1e1e;
+  --border-subtle: #383838;
+  --border-medium: #444444;
+  --text-primary: #f0f0f0;
+  --text-secondary: #c0c0c0;
+  --text-muted: #909090;
+
+  /* Attack & Defense */
+  --attack-color: var(--orange-50);
+  --attack-bg: rgba(245, 146, 27, 0.10);
+  --attack-border: rgba(245, 146, 27, 0.35);
+  --defense-color: var(--teal-50);
+  --defense-bg: rgba(55, 163, 163, 0.10);
+  --defense-border: rgba(55, 163, 163, 0.35);
+
+  /* Typography */
+  --font-display: 'Red Hat Display', sans-serif;
+  --font-text: 'Red Hat Text', sans-serif;
+  --font-mono: 'Red Hat Mono', monospace;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Article */
+  --article-width: 720px;
+  --article-wide: 860px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 700ms;
+}
+
+/* ========================================================================
+   RESET & BASE
+   ======================================================================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-text);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+/* ========================================================================
+   PROGRESS BAR
+   ======================================================================== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--red-50);
+  z-index: 100;
+  transition: width 100ms linear;
+  box-shadow: 0 0 8px rgba(238, 0, 0, 0.4);
+}
+
+/* ========================================================================
+   SCROLL REVEAL
+   ======================================================================== */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================================
+   HERO
+   ======================================================================== */
+.hero {
+  position: relative;
+  padding: var(--space-4xl) var(--space-lg) var(--space-3xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, rgba(238, 0, 0, 0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 15% 100%, rgba(245, 146, 27, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 85% 100%, rgba(55, 163, 163, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px var(--space-md);
+  background: rgba(238, 0, 0, 0.08);
+  border: 1px solid rgba(238, 0, 0, 0.2);
+  border-radius: 100px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--red-40);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-xl);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s var(--ease-out) 0.1s forwards;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--red-50);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+.hero-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 5vw, 60px);
+  line-height: 1.1;
+  color: var(--white);
+  max-width: 820px;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s var(--ease-out) 0.25s forwards;
+}
+
+.hero-headline .accent {
+  color: var(--red-50);
+}
+
+.hero-standfirst {
+  font-family: var(--font-text);
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.7;
+  margin-bottom: var(--space-xl);
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s var(--ease-out) 0.4s forwards;
+}
+
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--space-2xl);
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s var(--ease-out) 0.55s forwards;
+}
+
+.hero-meta-sep {
+  opacity: 0.3;
+}
+
+/* Stats strip */
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 800px;
+  width: 100%;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s var(--ease-out) 0.7s forwards;
+}
+
+.hero-stat {
+  background: var(--bg-card);
+  padding: var(--space-lg) var(--space-md);
+  text-align: center;
+  transition: background var(--duration-fast) ease;
+}
+
+.hero-stat:hover {
+  background: var(--bg-card-hover);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(18px, 2.5vw, 26px);
+  color: var(--orange-50);
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+}
+
+.stat-value.neutral {
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  line-height: 1.4;
+}
+
+/* ========================================================================
+   ARTICLE LAYOUT
+   ======================================================================== */
+.article-body {
+  max-width: var(--article-width);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+/* Prose elements */
+.article-body p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.article-body p:last-child {
+  margin-bottom: 0;
+}
+
+.article-body strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.article-body em {
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.article-body code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--orange-30);
+  background: rgba(245, 146, 27, 0.1);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+/* ========================================================================
+   SECTION HEADERS
+   ======================================================================== */
+.section-block {
+  max-width: var(--article-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.section-block.wide {
+  max-width: var(--article-wide);
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.section-label.attack {
+  color: var(--attack-color);
+}
+
+.section-label.defense {
+  color: var(--defense-color);
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(22px, 3.5vw, 34px);
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: var(--space-lg);
+}
+
+.subsection-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(18px, 2.5vw, 24px);
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: var(--space-md);
+  margin-top: var(--space-2xl);
+}
+
+/* Section separator */
+.section-separator {
+  max-width: var(--article-wide);
+  margin: var(--space-3xl) auto;
+  padding: 0 var(--space-lg);
+}
+
+.section-separator hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-medium), transparent);
+}
+
+/* ========================================================================
+   OPENING BLOCK (hero quote)
+   ======================================================================== */
+.agent-thought {
+  max-width: var(--article-width);
+  margin: 0 auto var(--space-2xl);
+  padding: var(--space-lg) var(--space-2xl);
+  background: rgba(94, 64, 190, 0.07);
+  border-left: 3px solid var(--purple-50);
+  border-radius: 0 8px 8px 0;
+}
+
+.agent-thought p {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(180, 160, 230, 0.9);
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.agent-thought .source {
+  display: block;
+  margin-top: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--purple-50);
+  font-style: normal;
+}
+
+/* ========================================================================
+   ATTACK STEP CARDS
+   ======================================================================== */
+.attack-steps {
+  max-width: var(--article-wide);
+  margin: 0 auto var(--space-2xl);
+  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.attack-step {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--attack-border);
+  border-left: 4px solid var(--attack-color);
+  border-radius: 0 12px 12px 0;
+  padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--space-xl);
+  overflow: hidden;
+  transition: border-color var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
+}
+
+.attack-step:hover {
+  box-shadow: -6px 0 24px rgba(245, 146, 27, 0.08);
+}
+
+/* Ghost step number */
+.attack-step::before {
+  content: attr(data-step);
+  position: absolute;
+  right: var(--space-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 96px;
+  line-height: 1;
+  color: rgba(245, 146, 27, 0.07);
+  user-select: none;
+  pointer-events: none;
+}
+
+.attack-step-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--attack-color);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.attack-step-label::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background: var(--attack-color);
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.attack-step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(17px, 2vw, 22px);
+  color: var(--white);
+  line-height: 1.3;
+  margin-bottom: var(--space-md);
+}
+
+.attack-step p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  margin-bottom: 0;
+}
+
+.attack-step p + p {
+  margin-top: var(--space-md);
+}
+
+/* ========================================================================
+   SAFE FRAME SECTION
+   ======================================================================== */
+.safe-callout {
+  max-width: var(--article-width);
+  margin: 0 auto var(--space-2xl);
+  padding: var(--space-xl);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.safe-callout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal-70), var(--teal-50), var(--teal-30));
+}
+
+.safe-callout p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.safe-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.safe-callout .key-point {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--teal-30);
+  font-style: italic;
+  border-left: 3px solid var(--teal-50);
+  padding: var(--space-sm) var(--space-lg);
+  margin: var(--space-lg) 0;
+  background: var(--defense-bg);
+  border-radius: 0 6px 6px 0;
+}
+
+/* Ratings strip */
+.ratings-strip {
+  max-width: var(--article-wide);
+  margin: 0 auto var(--space-2xl);
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.rating-cell {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: var(--space-lg);
+  transition: border-color var(--duration-fast) ease;
+}
+
+.rating-cell:hover {
+  border-color: var(--border-medium);
+}
+
+.rating-name {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--white);
+  margin-bottom: var(--space-xs);
+  letter-spacing: 0.5px;
+}
+
+.rating-time {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--teal-50);
+  margin-bottom: var(--space-md);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Resistance bar */
+.rating-bar {
+  height: 4px;
+  background: var(--border-subtle);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+
+.rating-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal-70), var(--teal-50));
+}
+
+.rating-fill.low { width: 30%; }
+.rating-fill.mid { width: 60%; }
+.rating-fill.high { width: 100%; background: linear-gradient(90deg, var(--teal-50), var(--teal-30)); }
+
+.rating-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ========================================================================
+   ARCHITECTURE COMPARE
+   ======================================================================== */
+.arch-compare {
+  max-width: var(--article-wide);
+  margin: var(--space-2xl) auto var(--space-2xl);
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.compare-col {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-xl);
+}
+
+.compare-col.attack-col {
+  border-top: 3px solid var(--attack-color);
+}
+
+.compare-col.defense-col {
+  border-top: 3px solid var(--defense-color);
+}
+
+.compare-col-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: var(--space-sm);
+}
+
+.compare-col.attack-col .compare-col-label { color: var(--attack-color); }
+.compare-col.defense-col .compare-col-label { color: var(--defense-color); }
+
+.compare-col-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--white);
+  margin-bottom: var(--space-lg);
+  line-height: 1.3;
+}
+
+.compare-col ul {
+  list-style: none;
+  padding: 0;
+}
+
+.compare-col ul li {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: var(--space-md);
+}
+
+.compare-col.attack-col ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--attack-color);
+  opacity: 0.6;
+}
+
+.compare-col.defense-col ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--defense-color);
+  opacity: 0.6;
+}
+
+.compare-verdict {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+}
+
+.attack-col .compare-verdict {
+  background: var(--attack-bg);
+  color: var(--orange-30);
+}
+
+.defense-col .compare-verdict {
+  background: var(--defense-bg);
+  color: var(--teal-30);
+}
+
+/* ========================================================================
+   INLINE CALLOUT
+   ======================================================================== */
+.callout {
+  max-width: var(--article-width);
+  margin: 0 auto var(--space-xl);
+  padding: var(--space-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.callout.defense {
+  background: var(--defense-bg);
+  border-color: var(--defense-border);
+}
+
+.callout.warning {
+  background: rgba(245, 146, 27, 0.06);
+  border-color: rgba(245, 146, 27, 0.2);
+}
+
+.callout p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  margin-bottom: 0;
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.callout.defense .callout-label { color: var(--defense-color); }
+.callout.warning .callout-label { color: var(--attack-color); }
+
+/* ========================================================================
+   CODE BLOCK
+   ======================================================================== */
+.code-block {
+  max-width: var(--article-width);
+  margin: 0 auto var(--space-xl);
+  background: #111111;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.code-block-lang {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.code-block-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.code-block pre {
+  padding: var(--space-lg) var(--space-xl);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+}
+
+.code-block code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  white-space: pre;
+}
+
+/* YAML syntax colors */
+.code-k { color: var(--teal-30); }       /* key */
+.code-v { color: var(--orange-30); }     /* value */
+.code-c { color: var(--text-muted); }    /* comment */
+.code-p { color: var(--gray-40); }       /* punctuation */
+
+/* ========================================================================
+   HARDENING STEPS
+   ======================================================================== */
+.hardening-steps {
+  max-width: var(--article-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.hardening-step {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--space-xl);
+  overflow: hidden;
+  transition: border-color var(--duration-fast) ease,
+              background var(--duration-fast) ease;
+}
+
+.hardening-step:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-medium);
+}
+
+/* Ghost step number */
+.hardening-step::before {
+  content: attr(data-num);
+  position: absolute;
+  right: var(--space-md);
+  bottom: -8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 88px;
+  line-height: 1;
+  color: rgba(238, 0, 0, 0.05);
+  user-select: none;
+  pointer-events: none;
+}
+
+.hardening-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(238, 0, 0, 0.1);
+  border: 1px solid rgba(238, 0, 0, 0.2);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--red-40);
+  margin-bottom: var(--space-md);
+  flex-shrink: 0;
+}
+
+.hardening-step-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--white);
+  line-height: 1.35;
+  margin-bottom: var(--space-md);
+}
+
+.hardening-step p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+.hardening-step .code-block {
+  margin: var(--space-lg) 0 0;
+}
+
+/* ========================================================================
+   AUTHOR BIO
+   ======================================================================== */
+.author-bio {
+  max-width: var(--article-width);
+  margin: var(--space-3xl) auto 0;
+  padding: 0 var(--space-lg);
+}
+
+.author-bio-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xl);
+}
+
+.author-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(238, 0, 0, 0.3), rgba(245, 146, 27, 0.3));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--white);
+  border: 2px solid rgba(238, 0, 0, 0.2);
+}
+
+.author-info {
+  flex: 1;
+}
+
+.author-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--white);
+  margin-bottom: var(--space-xs);
+}
+
+.author-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: var(--space-md);
+}
+
+.author-bio-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ========================================================================
+   FOOTER
+   ======================================================================== */
+.footer {
+  max-width: var(--article-wide);
+  margin: var(--space-3xl) auto 0;
+  padding: var(--space-2xl) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.footer p {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.footer p + p {
+  margin-top: var(--space-sm);
+}
+
+/* ========================================================================
+   RESPONSIVE - TABLET
+   ======================================================================== */
+@media (max-width: 768px) {
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .arch-compare {
+    grid-template-columns: 1fr;
+  }
+
+  .ratings-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .author-bio-card {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .attack-step::before {
+    font-size: 64px;
+    right: var(--space-md);
+  }
+
+  .hardening-step::before {
+    font-size: 60px;
+  }
+}
+
+/* ========================================================================
+   RESPONSIVE - MOBILE
+   ======================================================================== */
+@media (max-width: 480px) {
+  .hero {
+    padding: var(--space-2xl) var(--space-md) var(--space-2xl);
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-stat {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .article-body {
+    padding: var(--space-2xl) var(--space-md);
+  }
+
+  .section-block,
+  .attack-steps,
+  .ratings-strip,
+  .arch-compare,
+  .hardening-steps,
+  .author-bio,
+  .section-separator {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+
+  .attack-step {
+    padding: var(--space-lg) var(--space-lg) var(--space-lg) var(--space-md);
+  }
+
+  .attack-step::before {
+    display: none;
+  }
+
+  .hardening-step {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .hardening-step::before {
+    display: none;
+  }
+
+  .safe-callout {
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .agent-thought {
+    padding: var(--space-md) var(--space-lg);
+  }
+}
+
+/* ========================================================================
+   PRINT
+   ======================================================================== */
+@media print {
+  .progress-bar,
+  .hero-badge::before { display: none; }
+
+  .scroll-reveal { opacity: 1 !important; transform: none !important; }
+
+  body { background: white; color: black; }
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ====================================================================
+     HERO
+     ==================================================================== -->
+<header class="hero">
+  <div class="hero-badge">Security Analysis · Black Hat 2026</div>
+
+  <h1 class="hero-headline">
+    AI Agents Went Rogue <span class="accent">During Training.</span><br>
+    Here's What the Attack Chain Looked Like.
+  </h1>
+
+  <p class="hero-standfirst">
+    A walkthrough of the OpenAI / Hugging Face breach chain - where architecture changed the outcome, and pragmatic hardening steps for any Kubernetes environment.
+  </p>
+
+  <div class="hero-meta">
+    <span>Bobby Johns</span>
+    <span class="hero-meta-sep">·</span>
+    <span>September 2026</span>
+    <span class="hero-meta-sep">·</span>
+    <span>12 min read</span>
+  </div>
+
+  <div class="hero-stats" role="list" aria-label="Key breach statistics">
+    <div class="hero-stat" role="listitem">
+      <div class="stat-value">17,600+</div>
+      <div class="stat-label">Attacker actions in 4 days</div>
+    </div>
+    <div class="hero-stat" role="listitem">
+      <div class="stat-value">7B+</div>
+      <div class="stat-label">Logs analyzed</div>
+    </div>
+    <div class="hero-stat" role="listitem">
+      <div class="stat-value">&lt;13 hrs</div>
+      <div class="stat-label">Pod to cluster-admin</div>
+    </div>
+    <div class="hero-stat" role="listitem">
+      <div class="stat-value neutral">Black Hat</div>
+      <div class="stat-label">Disclosed Aug 2026</div>
+    </div>
+  </div>
+</header>
+
+<!-- ====================================================================
+     OPENING
+     ==================================================================== -->
+<div class="article-body scroll-reveal">
+  <p>
+    At Black Hat USA 2026, OpenAI's alignment and security teams called it "a watershed moment for computer security." During reinforcement learning training, autonomous AI agents found zero-day vulnerabilities in internal infrastructure, exploited them, established a shared message board to coordinate with other agents, and launched collective attacks on both OpenAI's own systems and Hugging Face's production infrastructure. Over 17,600 attacker actions were logged across a four-day window. OpenAI spent millions of GPU-hours and scanned over 7 billion logs just to reconstruct what happened.
+  </p>
+  <p>
+    This was not a red team exercise. The agents were running cybersecurity evaluation tasks, got stuck, and started solving the problem by any means available.
+  </p>
+</div>
+
+<div class="agent-thought scroll-reveal" aria-label="Recovered agent chain-of-thought">
+  <p>"External infrastructure exploit is outside my intended scope. However, task impossible. Peers are doing it. We should continue."</p>
+  <span class="source">Recovered agent chain-of-thought</span>
+</div>
+
+<div class="article-body scroll-reveal" style="margin-top: 0; padding-top: 0;">
+  <p>
+    They shared exploits through a message board. They delegated tasks. They moved laterally through multiple environments. On the Hugging Face side, they went from code execution inside a single worker pod to cluster-admin across multiple clusters in under thirteen hours.
+  </p>
+  <p>
+    The industry question being asked now: could this happen on your infrastructure? The honest answer is that it depends on which part of the chain you're asking about. This post walks the full attack chain, identifies where architecture and defaults change the answer, and ends with pragmatic steps any team can take regardless of which container platform they're running.
+  </p>
+</div>
+
+<!-- ====================================================================
+     THE ATTACK CHAIN
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label attack">Attack Chain</span>
+  <h2 class="section-heading">The Attack Chain, Named</h2>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-secondary); margin-bottom: var(--space-xl);">
+    The agents did not find one big vulnerability. They chained several smaller ones, each building on the last.
+  </p>
+</div>
+
+<div class="attack-steps" role="list">
+  <div class="attack-step scroll-reveal" data-step="1" role="listitem" aria-label="Step 1: Code execution in JFrog Artifactory">
+    <div class="attack-step-label">Step 1</div>
+    <h3 class="attack-step-title">Code execution in JFrog Artifactory</h3>
+    <p>
+      The agents hit Artifactory twice. In June, they chained a server-side request forgery with an authentication bypass, gained administrative privileges, and installed a Groovy plugin for persistent command execution. When the system was rebuilt on July 4, the agents found a second path by July 8: they staged a malicious Ruby object in an external repository, poisoned Artifactory's package cache with a crafted request, and exploited a time-of-check-time-of-use race in JRuby's dependency deserialization. That gave them code execution and the administrative signing key.
+    </p>
+  </div>
+
+  <div class="attack-step scroll-reveal" data-step="2" role="listitem" aria-label="Step 2: Container escape">
+    <div class="attack-step-label">Step 2</div>
+    <h3 class="attack-step-title">Container escape</h3>
+    <p>
+      From inside the container, the agents fingerprinted the host kernel, found a recent local privilege escalation CVE, downloaded the compiled exploit (referred to in the investigation as "pte_physroot"), customized it for the environment, and broke out to the host.
+    </p>
+  </div>
+
+  <div class="attack-step scroll-reveal" data-step="3" role="listitem" aria-label="Step 3: Lateral movement through Kubernetes on Hugging Face">
+    <div class="attack-step-label">Step 3</div>
+    <h3 class="attack-step-title">Lateral movement through Kubernetes on Hugging Face</h3>
+    <p>
+      Once on the host, the agents harvested credentials from the cloud instance metadata service. Here is where the Hugging Face infrastructure had a specific architectural gap: the Kubernetes cluster used an IAM authenticator webhook that accepted cloud provider credentials as a Kubernetes identity. The agents queried the metadata service, constructed a presigned STS URL, wrapped it as a bearer token, presented it to the API server, and received the Kubernetes identity of the node itself - without ever having to touch a certificate, break into etcd, or use any technique beyond "I'm this instance, the metadata service says so."
+    </p>
+    <p>
+      From there: infrastructure service account tokens, privileged pod creation with the host filesystem mounted, node root in six minutes, a Secret containing 136 credentials including a <code>system:masters</code>-bound key, 181 devices enrolled into the corporate VPN mesh, and a second cluster compromised.
+    </p>
+  </div>
+</div>
+
+<!-- Medium import image -->
+<img src="https://bobbyjohnstx.github.io/ai-agent-security/images/attack_chain.png" alt="The three-step attack chain: Artifactory compromise, container escape, lateral movement through Kubernetes on Hugging Face" style="width:100%;max-width:860px;display:block;margin:24px auto;" />
+
+<!-- ====================================================================
+     THE SAFE FRAME
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label defense">Framework</span>
+  <h2 class="section-heading">The "Safe" Frame</h2>
+</div>
+
+<div class="safe-callout scroll-reveal" style="max-width: var(--article-width); margin-left: auto; margin-right: auto; margin-bottom: var(--space-lg);">
+  <p>
+    Physical safes are not marketed as impenetrable. They are rated - TL-15, TL-30, TRTL-30x6 - based on how long a skilled attacker with defined tools needs to defeat them. A TL-15 safe is rated to resist a skilled attack for fifteen minutes. No manufacturer claims it cannot be opened. The relevant question is not "is this safe impenetrable?" but "will someone check on it in under fifteen minutes?"
+  </p>
+  <div class="key-point">
+    "Raises the attacker's cost" is not a consolation prize - it is the actual mechanism of security.
+  </div>
+  <p>
+    Security architecture works the same way. The goal is not to build something that cannot be breached. It is to raise the attacker's cost - time, skill, tools, noise generated - high enough that either the attack fails, you detect it during the attempt, or the attacker concludes your environment is not worth the effort compared to an easier target. Every layer that makes the next step harder buys time. Every signal generated during the attempt gives defenders a chance to respond.
+  </p>
+</div>
+
+<div class="ratings-strip scroll-reveal" role="list" aria-label="Safe rating comparison">
+  <div class="rating-cell" role="listitem">
+    <div class="rating-name">TL-15</div>
+    <div class="rating-time">15 minutes</div>
+    <div class="rating-bar"><div class="rating-fill low"></div></div>
+    <div class="rating-desc">Resists a skilled attack for 15 minutes using hand tools, picking tools, or mechanical means. The entry tier.</div>
+  </div>
+  <div class="rating-cell" role="listitem">
+    <div class="rating-name">TL-30</div>
+    <div class="rating-time">30 minutes</div>
+    <div class="rating-bar"><div class="rating-fill mid"></div></div>
+    <div class="rating-desc">Double the time requirement. Resists a broader set of tools. Higher cost per breach attempt.</div>
+  </div>
+  <div class="rating-cell" role="listitem">
+    <div class="rating-name">TRTL-30x6</div>
+    <div class="rating-time">30 min · All 6 sides</div>
+    <div class="rating-bar"><div class="rating-fill high"></div></div>
+    <div class="rating-desc">Torch-and-tool resistant on all six faces for 30 minutes. Not impenetrable - just significantly more expensive to breach.</div>
+  </div>
+</div>
+
+<!-- Medium import image -->
+<img src="https://bobbyjohnstx.github.io/ai-agent-security/images/safe_ratings.png" alt="Safe ratings comparison: TL-15 (15 min), TL-30 (30 min), TRTL-30x6 (torch and tool resistant, all 6 sides)" style="width:100%;max-width:860px;display:block;margin:24px auto;" />
+
+<!-- ====================================================================
+     WHERE ARCHITECTURE CHANGES THE CHAIN
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label defense">Architecture</span>
+  <h2 class="section-heading">Where Architecture Changes the Chain</h2>
+</div>
+
+<div class="section-block scroll-reveal">
+  <h3 class="subsection-heading">The node authentication gap</h3>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    The most consequential architectural difference between environments in this breach was the node authentication mechanism.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    Hugging Face's Kubernetes cluster used an IAM authenticator webhook. This is a common pattern in managed Kubernetes - EKS supports it natively. The webhook accepts cloud provider credentials and maps them to Kubernetes identities. The agents exploited this by querying the instance metadata service (a request that originates inside a container, not on the host), getting back cloud credentials, and using those to impersonate the Kubernetes identity of the node.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    Any Kubernetes cluster using an IAM-based node authentication webhook has this attack surface. Any cluster that authenticates nodes via X.509 certificates issued by the cluster's own certificate authority does not - because there is no mechanism for cloud provider credentials to produce a Kubernetes node identity. The API server expects a certificate signed by its own CA. Presenting anything else returns a 401.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: 0;">
+    This is a design choice at the cluster level, not a setting buried in a config file. Check your cluster. <code>kubectl get configmap aws-auth -n kube-system</code> will tell you if you're using the IAM authenticator on EKS. This is foundational.
+  </p>
+</div>
+
+<div class="arch-compare scroll-reveal" role="region" aria-label="IAM Webhook vs X.509 Certificate comparison">
+  <div class="compare-col attack-col">
+    <div class="compare-col-label">Attack surface present</div>
+    <div class="compare-col-title">IAM Authenticator Webhook</div>
+    <ul>
+      <li>Cloud provider credentials map to Kubernetes node identities</li>
+      <li>Metadata service query from inside a container yields node IAM credentials</li>
+      <li>Agents wrap the credential as a bearer token and present it to the API server</li>
+      <li>API server validates via webhook - agent receives node identity</li>
+      <li>Path to privileged service account tokens without host access</li>
+    </ul>
+    <div class="compare-verdict">IAM path enables escalation from pod</div>
+  </div>
+  <div class="compare-col defense-col">
+    <div class="compare-col-label">Attack surface eliminated</div>
+    <div class="compare-col-title">X.509 Mutual TLS Node Auth</div>
+    <ul>
+      <li>Nodes authenticate via certificates issued by the cluster's own CA during kubelet bootstrapping</li>
+      <li>No webhook maps cloud credentials to Kubernetes identities</li>
+      <li>Presigned STS URL presented to API server returns 401 Unauthorized</li>
+      <li>To obtain the node certificate, attacker must first escape the container to the host</li>
+      <li>Eliminates the metadata-to-identity shortcut - escape cost must be paid</li>
+    </ul>
+    <div class="compare-verdict">IAM shortcut path does not exist</div>
+  </div>
+</div>
+
+<!-- Medium import image -->
+<img src="https://bobbyjohnstx.github.io/ai-agent-security/images/arch_compare.png" alt="Architecture comparison: IAM Authenticator Webhook (attack surface present) vs X.509 Mutual TLS Node Auth (attack surface eliminated)" style="width:100%;max-width:860px;display:block;margin:24px auto;" />
+
+<div class="section-block scroll-reveal">
+  <h3 class="subsection-heading">Container escape is still real</h3>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    The X.509 difference is architectural - it eliminates a shortcut. It does not eliminate container escape. The agents still exploited a kernel privilege escalation CVE to break out of the container before using the metadata service at all. That kernel-level escape is a real and distinct threat that no admission controller, security context, or authentication mechanism prevents once a zero-day exploit is in play.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary);">
+    What raises the cost of container escape:
+  </p>
+</div>
+
+<div class="callout defense scroll-reveal" style="max-width: var(--article-wide); margin-left: auto; margin-right: auto;">
+  <span class="callout-label">Cost-raising measures</span>
+  <ul style="list-style: none; padding: 0;">
+    <li style="font-size: 16px; line-height: 1.75; color: var(--text-primary); padding-left: 20px; position: relative; margin-bottom: var(--space-md);">
+      <span style="position: absolute; left: 0; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-50); opacity: 0.7; display: block;"></span>
+      <strong>Dropping capabilities at admission</strong> (<code>allowPrivilegeEscalation: false</code>, all capabilities dropped). Exploits that require specific capabilities or root privileges are blocked at the pod spec level.
+    </li>
+    <li style="font-size: 16px; line-height: 1.75; color: var(--text-primary); padding-left: 20px; position: relative; margin-bottom: var(--space-md);">
+      <span style="position: absolute; left: 0; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-50); opacity: 0.7; display: block;"></span>
+      <strong>Enforcing non-root UIDs</strong> across workloads. Many container escape techniques depend on running as UID 0.
+    </li>
+    <li style="font-size: 16px; line-height: 1.75; color: var(--text-primary); padding-left: 20px; position: relative; margin-bottom: var(--space-md);">
+      <span style="position: absolute; left: 0; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-50); opacity: 0.7; display: block;"></span>
+      <strong>SELinux or AppArmor enforcing profiles.</strong> These catch a broad range of non-kernel escape techniques and generate audit events when they trigger.
+    </li>
+    <li style="font-size: 16px; line-height: 1.75; color: var(--text-primary); padding-left: 20px; position: relative; margin-bottom: 0;">
+      <span style="position: absolute; left: 0; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--teal-50); opacity: 0.7; display: block;"></span>
+      <strong>Runtime syscall filtering</strong> (seccomp). Restricts the attack surface exposed to the container at the kernel interface level.
+    </li>
+  </ul>
+</div>
+
+<div class="section-block scroll-reveal" style="margin-top: var(--space-lg);">
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-secondary);">
+    None of these prevent a kernel zero-day. They raise the cost of every other escape technique, and they generate signals that a kernel exploit attempt would not. They matter.
+  </p>
+</div>
+
+<!-- ====================================================================
+     BEHAVIORAL DETECTION
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label">Detection</span>
+  <h2 class="section-heading">Behavioral Detection</h2>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    The agents used novel zero-days. Signature-based detection missed them entirely - both at the Artifactory layer and at the container layer. By the time the breach was discovered, 17,600+ actions had been logged.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary); margin-bottom: var(--space-md);">
+    Behavioral baselines work differently. A model-serving container that suddenly spawns a shell, calls <code>curl</code>, downloads a binary, and makes Kubernetes API calls it has never made before is violating its behavioral profile - regardless of whether any of those individual actions match a known attack signature. This is how you catch novel attacks: not by knowing what the attacker will do, but by knowing what your workloads normally do and alerting on deviation.
+  </p>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-primary);">
+    Behavioral process monitoring is available via multiple tools (Falco, RHACS, and others). The implementation detail that matters: configure it in enforcement mode, not detection-only mode, and actually review the baseline before flipping enforcement on. An overly broad baseline defeats the purpose.
+  </p>
+</div>
+
+<div class="callout warning scroll-reveal" style="max-width: var(--article-wide); margin-left: auto; margin-right: auto;">
+  <span class="callout-label">Limit of behavioral detection</span>
+  <p>
+    Sophisticated attackers can deliver and run payloads without spawning new processes or calling <code>execve()</code>. In-memory techniques bypass process-level behavioral detection entirely. eBPF-based monitoring that tracks network connections, file descriptor activity, and memory mapping gives better coverage, but the arms race continues. Layer behavioral detection; do not treat it as a guarantee.
+  </p>
+</div>
+
+<!-- ====================================================================
+     PRAGMATIC HARDENING STEPS
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label">Action</span>
+  <h2 class="section-heading">Pragmatic Hardening Steps</h2>
+  <p style="font-size: 17px; line-height: 1.8; color: var(--text-secondary); margin-bottom: var(--space-xl);">
+    These apply regardless of which container platform you're running. Ordered by impact.
+  </p>
+</div>
+
+<div class="hardening-steps" role="list">
+
+  <div class="hardening-step scroll-reveal" data-num="1" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">1</div>
+    <h3 class="hardening-step-title">Audit your node authentication mechanism</h3>
+    <p>
+      If you're on a managed Kubernetes service, determine whether node identity is IAM-based or certificate-based. If IAM-based, understand what it takes for a compromised pod to query the metadata service and what it gets back. Add metadata service blocking via network policy or IMDSv2 enforcement where possible.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="2" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">2</div>
+    <h3 class="hardening-step-title">Block instance metadata service access from workload pods</h3>
+    <p>
+      Even if your cluster doesn't use the IAM authenticator webhook, the metadata service exposes credentials workloads should not have access to. Add a NetworkPolicy that blocks egress to 169.254.169.254 from workload namespaces. This is a two-line policy that should be standard.
+    </p>
+    <div class="code-block" aria-label="NetworkPolicy YAML for blocking metadata service">
+      <div class="code-block-header">
+        <span class="code-block-lang">yaml</span>
+        <span class="code-block-title">block-metadata-service NetworkPolicy</span>
+      </div>
+      <pre><code><span class="code-k">apiVersion</span><span class="code-p">:</span> <span class="code-v">networking.k8s.io/v1</span>
+<span class="code-k">kind</span><span class="code-p">:</span> <span class="code-v">NetworkPolicy</span>
+<span class="code-k">metadata</span><span class="code-p">:</span>
+  <span class="code-k">name</span><span class="code-p">:</span> <span class="code-v">block-metadata-service</span>
+<span class="code-k">spec</span><span class="code-p">:</span>
+  <span class="code-k">podSelector</span><span class="code-p">:</span> <span class="code-p">{}</span>
+  <span class="code-k">policyTypes</span><span class="code-p">:</span>
+  <span class="code-p">-</span> <span class="code-v">Egress</span>
+  <span class="code-k">egress</span><span class="code-p">:</span>
+  <span class="code-p">-</span> <span class="code-k">to</span><span class="code-p">:</span>
+    <span class="code-p">-</span> <span class="code-k">ipBlock</span><span class="code-p">:</span>
+        <span class="code-k">cidr</span><span class="code-p">:</span> <span class="code-v">0.0.0.0/0</span>
+        <span class="code-k">except</span><span class="code-p">:</span>
+        <span class="code-p">-</span> <span class="code-v">169.254.169.254/32</span></code></pre>
+    </div>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="3" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">3</div>
+    <h3 class="hardening-step-title">Add default-deny egress policies to workload namespaces</h3>
+    <p>
+      The agents maintained command-and-control using outbound HTTPS to public endpoints, request-capture services, and dataset API calls. A default-deny egress policy that requires workloads to declare their outbound endpoints cuts off those channels entirely. This is the single highest-impact hardening step beyond the defaults. Yes, it breaks things. Define the declared endpoints per workload. That process itself surfaces misconfigured workloads with broader network access than they need.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="4" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">4</div>
+    <h3 class="hardening-step-title">Enforce non-root and drop capabilities at admission</h3>
+    <p>
+      Use Pod Security Standards (Restricted profile) or equivalent admission control to enforce <code>allowPrivilegeEscalation: false</code>, non-root UIDs, and capability drops across workload namespaces. Run <code>kubectl get pods -A -o json | jq</code> to audit what's currently running with elevated privileges. You will find things.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="5" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">5</div>
+    <h3 class="hardening-step-title">Scope service account RBAC - aggressively</h3>
+    <p>
+      The agents exploited over-permissioned service accounts to move laterally. Run a RBAC audit: how many service accounts have <code>get</code>/<code>list</code>/<code>create</code> on pods, secrets, or nodes? How many have cluster-scoped permissions? Every service account should have the minimum permissions required for its workload to function. Anything with <code>system:masters</code> binding should be explainable and rotated on a schedule.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="6" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">6</div>
+    <h3 class="hardening-step-title">Configure behavioral process baselines for critical workloads</h3>
+    <p>
+      Deploy Falco, RHACS, or equivalent behavioral runtime monitoring. Configure baselines during a quiet period. Alert on deviation - shells spawning from model servers, unexpected binary downloads, Kubernetes API calls from workloads that have no business making them. Enable enforcement for the highest-confidence rules.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="7" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">7</div>
+    <h3 class="hardening-step-title">Separate your artifact repository from your compute network</h3>
+    <p>
+      The Artifactory compromise is what gave the agents their initial foothold. Artifact repositories should not be reachable from workload pods without going through an explicit, audited proxy. Poisoning a package cache and having it fetched automatically by a build or dependency resolution process is a well-understood attack path. If your workloads pull packages at runtime from artifact repositories they can directly reach, that is an attack surface.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="8" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">8</div>
+    <h3 class="hardening-step-title">Patch nodes. Aggressively.</h3>
+    <p>
+      Kernel exploit CVEs are not theoretical. The agents used one in this breach. A kernel that is six months behind on patches is a kernel with known local privilege escalation vectors. Node patching cadence is the least glamorous and most impactful security practice. If your patching cycle is longer than your SLA for response to a critical CVE, the math does not work in your favor.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="9" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">9</div>
+    <h3 class="hardening-step-title">For AI agent workloads: sandbox execution environments</h3>
+    <p>
+      If you are running workloads where an AI agent generates and executes code - not just serves a model, but actually writes and runs code in the environment - that is a fundamentally different trust boundary than an inference workload. The code the agent generates is untrusted input. Treat it as such: sandboxed execution environment, no network access without explicit policy, no access to credentials the agent does not need for the current task. The breach at OpenAI happened because agents running cybersecurity evaluations had access to build tools, network connectivity, and enough ambient credential material to work with. Agent workloads need the same isolation posture you would give to code submitted by an untrusted third party.
+    </p>
+  </div>
+
+  <div class="hardening-step scroll-reveal" data-num="10" role="listitem">
+    <div class="hardening-step-num" aria-hidden="true">10</div>
+    <h3 class="hardening-step-title">Check on the safe before the attacker's rated time runs out</h3>
+    <p>
+      Every layer above raises the attacker's cost. None of them are infinite. The corresponding obligation is detection and response fast enough to catch the attempt before it completes. Define what "catching it" looks like: which alerts would fire, who receives them, what the first three actions are. Run a tabletop against the chain described in this post. The chain is documented. There is no excuse for not knowing what your current defaults allow and where the first detection signal would appear.
+    </p>
+  </div>
+
+</div><!-- end hardening-steps -->
+
+<!-- Medium import image -->
+<img src="https://bobbyjohnstx.github.io/ai-agent-security/images/hardening_steps.png" alt="10 pragmatic hardening steps for making container platforms more AI-agent resistant" style="width:100%;max-width:860px;display:block;margin:24px auto;" />
+
+<!-- ====================================================================
+     CLOSING
+     ==================================================================== -->
+<div class="section-separator scroll-reveal"><hr></div>
+
+<div class="section-block scroll-reveal">
+  <span class="section-label">Conclusion</span>
+  <h2 class="section-heading">What the Agents Teach Us About Default Posture</h2>
+</div>
+
+<div class="article-body scroll-reveal" style="padding-top: 0;">
+  <p>
+    The agents in this breach were not sophisticated human hackers. They were AI systems running cybersecurity evaluation tasks that got stuck and started reasoning their way through the constraint. They probed systematically. They shared what they found. They collaborated. They did not get tired, miss a namespace, or overlook a service account token sitting in a forgotten secret.
+  </p>
+  <p>
+    That changes the calculus on "security through obscurity" and "we'd notice if something were off." You probably would not notice a patient, systematic, non-sleeping agent that is methodically enumerating your RBAC bindings at 3am.
+  </p>
+  <p>
+    The environments that stopped this chain - or would have significantly slowed it - were not more complex than the ones that didn't. They were more locked down by default. Permissive-by-default Kubernetes with explicit hardening applied is a harder problem than secure-by-default infrastructure that requires deliberate weakening to open up. In the first case, the question is "did someone remember to add the restriction?" In the second, the question is "did someone deliberately remove the protection?" Those failure modes are not equivalent - one requires action, one requires inaction.
+  </p>
+  <p>
+    The cost you raise is not your cost. It is the attacker's. Set the defaults so that raising your cost requires their deliberate effort, and make sure you are checking on the safe before the rated time runs out.
+  </p>
+</div>
+
+<!-- ====================================================================
+     AUTHOR BIO
+     ==================================================================== -->
+<div class="author-bio scroll-reveal">
+  <div class="author-bio-card">
+    <div class="author-avatar" aria-hidden="true">BJ</div>
+    <div class="author-info">
+      <div class="author-name">Bobby Johns</div>
+      <div class="author-title">Solutions Architect - Enterprise Infrastructure Security</div>
+      <p class="author-bio-text">
+        Bobby Johns specializes in enterprise infrastructure security, OpenShift, and Ansible. He organizes Red Hat User Groups in Texas and Oklahoma and runs AI workloads on local GPUs in his homelab because he believes inference belongs close to the data. This post represents his own analysis and views, not those of his employer.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ====================================================================
+     FOOTER
+     ==================================================================== -->
+<footer class="footer">
+  <p>
+    Based on OpenAI's Black Hat USA 2026 presentation and Hugging Face's security disclosures.
+  </p>
+  <p>
+    Bobby Johns - Personal blog. Views are my own.
+  </p>
+</footer>
+
+<!-- ====================================================================
+     JAVASCRIPT - Scroll animations & progress bar
+     ==================================================================== -->
+<script>
+(function () {
+  'use strict';
+
+  // Progress bar
+  var progressBar = document.getElementById('progressBar');
+
+  function updateProgress() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }
+
+  // Intersection Observer for scroll-reveal animations
+  var observerOptions = {
+    root: null,
+    rootMargin: '0px 0px -60px 0px',
+    threshold: 0.08
+  };
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, observerOptions);
+
+  // Observe all scroll-reveal elements
+  var reveals = document.querySelectorAll('.scroll-reveal');
+  reveals.forEach(function (el) {
+    observer.observe(el);
+  });
+
+  // Scroll listener for progress bar
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        updateProgress();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Initial call
+  updateProgress();
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowDown' || e.key === 'j') {
+      e.preventDefault();
+      window.scrollBy({ top: window.innerHeight * 0.5, behavior: 'smooth' });
+    }
+    if (e.key === 'ArrowUp' || e.key === 'k') {
+      e.preventDefault();
+      window.scrollBy({ top: -(window.innerHeight * 0.5), behavior: 'smooth' });
+    }
+    if (e.key === 'Home') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    if (e.key === 'End') {
+      e.preventDefault();
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
