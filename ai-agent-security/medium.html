@@ -457,26 +457,20 @@ blockquote .quote-label {
     Even if your cluster doesn&rsquo;t use the IAM authenticator webhook, the metadata service exposes credentials workloads should not have access to. Add a NetworkPolicy that blocks egress to 169.254.169.254 from workload namespaces.
   </p>
 
-  <div class="code-block">
-    <div class="code-header">
-      <span class="code-lang">yaml</span>
-      <span class="code-title">block-metadata-service NetworkPolicy</span>
-    </div>
-    <pre><code><span class="yk">apiVersion</span><span class="yp">:</span> <span class="yv">networking.k8s.io/v1</span>
-<span class="yk">kind</span><span class="yp">:</span> <span class="yv">NetworkPolicy</span>
-<span class="yk">metadata</span><span class="yp">:</span>
-  <span class="yk">name</span><span class="yp">:</span> <span class="yv">block-metadata-service</span>
-<span class="yk">spec</span><span class="yp">:</span>
-  <span class="yk">podSelector</span><span class="yp">:</span> <span class="yp">{}</span>
-  <span class="yk">policyTypes</span><span class="yp">:</span>
-  <span class="yp">-</span> <span class="yv">Egress</span>
-  <span class="yk">egress</span><span class="yp">:</span>
-  <span class="yp">-</span> <span class="yk">to</span><span class="yp">:</span>
-    <span class="yp">-</span> <span class="yk">ipBlock</span><span class="yp">:</span>
-        <span class="yk">cidr</span><span class="yp">:</span> <span class="yv">0.0.0.0/0</span>
-        <span class="yk">except</span><span class="yp">:</span>
-        <span class="yp">-</span> <span class="yv">169.254.169.254/32</span></code></pre>
-  </div>
+  <pre><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: block-metadata-service
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+        except:
+        - 169.254.169.254/32</code></pre>
 
   <!-- Step 3 -->
   <p class="step-label">Step 3</p>
@@ -590,7 +584,7 @@ blockquote .quote-label {
   </div>
 
   <p>
-    The cost you raise is not your cost. It is the attacker&rsquo;s. Set the defaults so that raising your cost requires their deliberate effort, and make sure you are checking on the safe before the rated time runs out.
+    These agents didn&rsquo;t tire, forget a namespace, or skip a service account token in a corner of the cluster nobody had looked at in two years. The only question is whether your defaults force them to pay full price at every step &mdash; and whether your team sees the first signal before they do.
   </p>
 
   <!-- ══ AUTHOR BIO ══ -->
