@@ -394,14 +394,14 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.0 &mdash; Rewritten in Go</h2>
+        <h2 class="sec-title">v2.1 highlights</h2>
         <ul class="details">
-          <li><span class="dt">Single binary</span> &mdash; <code>go build</code> produces one static binary. No Node.js, no <code>node_modules</code>, no package manager. Web UI embedded via <code>go:embed</code>. SQLite is pure Go (<code>modernc.org/sqlite</code>), no CGO needed.</li>
-          <li><span class="dt">Native concurrency</span> &mdash; goroutine-based multi-agent orchestration. <code>/swarm</code> runs parallel agents as lightweight goroutines (~4KB each) sharing the same process and event bus. No child processes, no IPC.</li>
-          <li><span class="dt">36 built-in plugins</span> &mdash; all plugins ship as standalone Go binaries communicating over JSON-RPC. 12 general-purpose (safety net, log sanitizer, web search, telemetry) and 24 Red Hat integrations (OpenShift, RHACS, Tekton, RHOAI, Ansible, RHACM, Satellite).</li>
-          <li><span class="dt">Resource efficiency</span> &mdash; ~20MB RSS typical (vs ~150MB for the TypeScript version). 50 parallel subagents add negligible memory overhead.</li>
-          <li><span class="dt">Two-stage context management</span> &mdash; automatic elision at 80% context (stubs old tool outputs), full LLM summarization at the limit, bounded tool previews (head+tail format).</li>
-          <li><span class="dt">New TUI features</span> &mdash; which-key panel (<code>Ctrl+X</code>), extended thinking (<code>/thinking</code>), snapshot undo/redo (<code>/undo</code>, <code>/redo</code>), diff viewer (<code>/diff</code>), multimodal input (<code>/paste-image</code>), in-transcript search (<code>Ctrl+F</code>).</li>
+          <li><span class="dt">Go rewrite</span> (v2.0) &mdash; single static binary, no runtime dependencies. ~20MB RSS, goroutine-based multi-agent orchestration, embedded web UI via <code>go:embed</code>, pure-Go SQLite.</li>
+          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth per session, <code>/goal</code> runs autonomous multi-turn loops until a condition is met, <code>/branch</code> forks conversations to try alternatives.</li>
+          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes context window usage with per-category breakdown, <code>/btw</code> asks side questions without polluting history, <code>/changes</code> shows only files tinycode modified.</li>
+          <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> provides scratch storage surviving compaction, <code>report_findings</code> for structured code review output.</li>
+          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code> for lifecycle automation; <code>additionalContext</code> lets hooks inject text into the model context.</li>
+          <li><span class="dt">TUI polish</span> &mdash; redesigned status bar with visual goal tracker, frecency-ranked command palette, left sidebar, clipboard copy (<code>/copy</code>), <code>/rewind</code> to any earlier turn.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -472,17 +472,16 @@ Trace from the HTTP handler to the token validation.</pre>
 
         <h3 class="sub">Key features</h3>
         <ul class="details">
-          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines sharing the same process and event bus.</li>
-          <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
+          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines; <code>--plan</code> shows decomposition before dispatch.</li>
+          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops until a condition is met, <code>/branch</code> forks conversations.</li>
+          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
           <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max).</li>
-          <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code> and <code>/redo</code> revert or restore AI file changes.</li>
-          <li><span class="dt">Diff viewer</span> &mdash; <code>/diff</code> shows uncommitted changes inline.</li>
-          <li><span class="dt">Multimodal input</span> &mdash; <code>/paste-image</code> for vision-capable models.</li>
-          <li><span class="dt">In-transcript search</span> &mdash; <code>Ctrl+F</code> to search, <code>Ctrl+N</code>/<code>Ctrl+P</code> to navigate matches.</li>
-          <li><span class="dt">Session management</span> &mdash; tree sidebar, resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export.</li>
-          <li><span class="dt">Model scoping</span> &mdash; <code>/scoped-models</code> favorites list to filter the model selector.</li>
-          <li><span class="dt">Token budget</span> &mdash; <code>--max-tokens</code> sets a cumulative limit; session aborts when exceeded.</li>
-          <li><span class="dt">Safe mode</span> &mdash; <code>--safe-mode</code> skips plugins, MCP, and user agents.</li>
+          <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code>, <code>/redo</code>, and <code>/rewind</code> to any earlier conversation turn.</li>
+          <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
+          <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
+          <li><span class="dt">Frecency command palette</span> &mdash; ranked by usage frequency + recency.</li>
+          <li><span class="dt">Session management</span> &mdash; left sidebar, resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>).</li>
+          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code>; <code>additionalContext</code> injects text into model context.</li>
         </ul>
 
         <h3 class="sub">Configuration</h3>
