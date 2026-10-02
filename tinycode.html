@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>tinycode — Getting Started</title>
-  <meta name="description" content="tinycode — a slim, local-LLM-first AI coding assistant. TUI, web UI, desktop app, and IDE integration. Getting started guides for local, container, and OpenShift deployment.">
+  <meta name="description" content="tinycode — a local-first AI coding assistant. Single Go binary with TUI, web UI, 36 built-in plugins, and IDE integration. Getting started guides for local, container, and OpenShift deployment.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Mono:wght@400;500&family=Red+Hat+Text:wght@400;500;600&display=swap" rel="stylesheet">
@@ -351,7 +351,7 @@
     <div class="container">
       <a href="/" class="hero-back" aria-label="Back to homepage">&larr; bobbyjohnstx.github.io</a>
       <h1 class="hero-heading"><span class="tiny">tiny</span><span class="code">code</span></h1>
-      <p class="hero-desc">A slim, local-LLM-first AI coding assistant. Runs air-gapped against your own LLMs &mdash; Ollama, ramalama, vLLM, LM Studio, or any OpenAI-compatible endpoint. Cloud providers (Anthropic, OpenAI, Google, OpenRouter) supported as a secondary option.</p>
+      <p class="hero-desc">Local-first AI coding assistant. A single Go binary embeds everything &mdash; TUI, HTTP server, session management, LLM client, and 36 plugins. No runtime dependencies. Works with any OpenAI-compatible endpoint: Ollama, vLLM, LM Studio, OpenRouter, or your own infrastructure.</p>
       <div class="hero-meta">
         <a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a>
         <span class="sep">/</span>
@@ -360,8 +360,6 @@
         <a href="https://github.com/bobbyjohnstx/tinycode-operator" target="_blank" rel="noopener">operator</a>
         <span class="sep">/</span>
         <a href="https://github.com/bobbyjohnstx/homebrew-tap" target="_blank" rel="noopener">homebrew-tap</a>
-        <span class="sep">/</span>
-        <a href="https://github.com/bobbyjohnstx/tinycode-plugins" target="_blank" rel="noopener">plugins</a>
       </div>
     </div>
   </section>
@@ -370,14 +368,9 @@
     <section class="sec alt">
       <div class="container">
         <div class="sec-label">Install</div>
-        <h2 class="sec-title">Four ways to start</h2>
-        <p class="sec-desc">npx for instant use. Homebrew for local dev. Container for teams. Operator for platform engineering.</p>
+        <h2 class="sec-title">Three ways to start</h2>
+        <p class="sec-desc">Single binary for local dev. Container for teams. Operator for platform engineering.</p>
         <div class="install-grid">
-          <div class="install-option">
-            <div class="install-label">npx</div>
-            <div class="install-cmd"><span class="p">$</span> npx tinycode-ai</div>
-            <div class="install-note">Node.js 20+ &mdash; or <code>npm install -g tinycode-ai</code></div>
-          </div>
           <div class="install-option">
             <div class="install-label">Homebrew</div>
             <div class="install-cmd"><span class="p">$</span> brew install bobbyjohnstx/tap/tinycode</div>
@@ -385,8 +378,8 @@
           </div>
           <div class="install-option">
             <div class="install-label">From source</div>
-            <div class="install-cmd"><span class="p">$</span> git clone &amp;&amp; bun install<br><span class="p">$</span> bun dev</div>
-            <div class="install-note">Requires <a href="https://bun.sh" target="_blank" rel="noopener">Bun</a></div>
+            <div class="install-cmd"><span class="p">$</span> git clone &amp;&amp; make build<br><span class="p">$</span> ./dist/tinycode</div>
+            <div class="install-note">Requires <a href="https://go.dev" target="_blank" rel="noopener">Go 1.27+</a></div>
           </div>
           <div class="install-option">
             <div class="install-label">Container</div>
@@ -401,14 +394,14 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">Recent highlights</h2>
+        <h2 class="sec-title">v2.0 &mdash; Rewritten in Go</h2>
         <ul class="details">
-          <li><span class="dt">Ollama auto-profiling</span> (v1.20) &mdash; GPU-aware context windows. Detects GPU memory (macOS unified, NVIDIA, AMD), creates optimized Modelfile profiles (e.g. <code>qwen3.5:9b-tc32k</code>), and caps <code>num_ctx</code> to fit available VRAM. Configurable via <code>auto_profile</code> in config.</li>
-          <li><span class="dt">Plugin ecosystem</span> &mdash; 37 plugins across two collections (<a href="https://github.com/bobbyjohnstx/tinycode-plugins" target="_blank" rel="noopener">tinycode-plugins</a>). 25 Red Hat product integrations (OpenShift, RHACS, Tekton, RHOAI, Ansible, RHACM, Satellite) plus 12 general-purpose plugins for safety, context management, document handling, notifications, web search, and developer tooling.</li>
-          <li><span class="dt">Plugin SDK</span> &mdash; published to npm as <code>tinycode-plugin</code>. V2 hooks, config schema validation, test utilities, and <code>tinycode plugin-init</code> scaffolding command.</li>
-          <li><span class="dt">OpenRouter provider</span> &mdash; 300+ models with capability detection, pricing, and per-session cost tracking. Set <code>OPENROUTER_API_KEY</code> to get started.</li>
-          <li><span class="dt">LM Studio auto-discovery</span> &mdash; auto-detected on <code>localhost:1234</code> alongside Ollama and vLLM.</li>
-          <li><span class="dt">Unified command palette</span> &mdash; <code>Ctrl+P</code> searches across commands, agents, sessions, and skills with frecency ranking.</li>
+          <li><span class="dt">Single binary</span> &mdash; <code>go build</code> produces one static binary. No Node.js, no <code>node_modules</code>, no package manager. Web UI embedded via <code>go:embed</code>. SQLite is pure Go (<code>modernc.org/sqlite</code>), no CGO needed.</li>
+          <li><span class="dt">Native concurrency</span> &mdash; goroutine-based multi-agent orchestration. <code>/swarm</code> runs parallel agents as lightweight goroutines (~4KB each) sharing the same process and event bus. No child processes, no IPC.</li>
+          <li><span class="dt">36 built-in plugins</span> &mdash; all plugins ship as standalone Go binaries communicating over JSON-RPC. 12 general-purpose (safety net, log sanitizer, web search, telemetry) and 24 Red Hat integrations (OpenShift, RHACS, Tekton, RHOAI, Ansible, RHACM, Satellite).</li>
+          <li><span class="dt">Resource efficiency</span> &mdash; ~20MB RSS typical (vs ~150MB for the TypeScript version). 50 parallel subagents add negligible memory overhead.</li>
+          <li><span class="dt">Two-stage context management</span> &mdash; automatic elision at 80% context (stubs old tool outputs), full LLM summarization at the limit, bounded tool previews (head+tail format).</li>
+          <li><span class="dt">New TUI features</span> &mdash; which-key panel (<code>Ctrl+X</code>), extended thinking (<code>/thinking</code>), snapshot undo/redo (<code>/undo</code>, <code>/redo</code>), diff viewer (<code>/diff</code>), multimodal input (<code>/paste-image</code>), in-transcript search (<code>Ctrl+F</code>).</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -463,70 +456,60 @@ Trace from the HTTP handler to the token validation.</pre>
       <div class="container">
         <div class="sec-label">Terminal UI</div>
         <h2 class="sec-title">The primary interface</h2>
-        <p class="sec-desc">The TUI is the fastest way to work. It starts instantly, runs anywhere a terminal does, and keeps you in the same environment as your code. Full-featured interactive session with conversation history, model switching, agent invocation, and inline tool approval.</p>
+        <p class="sec-desc">Built with <a href="https://github.com/charmbracelet/bubbletea" target="_blank" rel="noopener">bubbletea</a> (Elm architecture). Starts instantly, runs anywhere a terminal does, keeps you in the same environment as your code.</p>
 
 <pre><span class="c"># Start in the current directory</span>
 <span class="p">$</span> tinycode
 
 <span class="c"># Or point at a specific project</span>
-<span class="p">$</span> tinycode /path/to/project</pre>
+<span class="p">$</span> tinycode /path/to/project
 
-        <h3 class="sub">Modes</h3>
-        <ul class="details">
-          <li><span class="dt">build</span> (default) &mdash; full tool access. Reads, writes, edits files, runs shell commands, executes tools.</li>
-          <li><span class="dt">plan</span> &mdash; read-only with hard permission enforcement. The LLM can explore the codebase and write only to a plan file. All other edits are blocked at the tool level.</li>
-        </ul>
+<span class="c"># Resume last session</span>
+<span class="p">$</span> tinycode <span class="f">-c</span>
 
-        <h3 class="sub">TUI features</h3>
+<span class="c"># Headless API server</span>
+<span class="p">$</span> tinycode serve</pre>
+
+        <h3 class="sub">Key features</h3>
         <ul class="details">
-          <li><span class="dt">Command palette</span> (<code>Ctrl+P</code>) &mdash; unified search across commands, agents, sessions, and skills with frecency ranking.</li>
-          <li><span class="dt">Session tree sidebar</span> (<code>&lt;leader&gt;b</code>) &mdash; toggleable ASCII tree showing session hierarchy organized by parent-child relationships.</li>
-          <li><span class="dt">Session navigation</span> (<code>&lt;leader&gt;h/j/k/l</code>) &mdash; vim-style parent/child/sibling session navigation.</li>
-          <li><span class="dt">Agent switching</span> (<code>Tab</code> or <code>&lt;leader&gt;a</code>) &mdash; cycle through agents or pick from a list. Use <code>/ask &lt;agent&gt;</code> for one-shot subagent invocations. Subagent output renders inline in the parent session as a collapsible preview.</li>
-          <li><span class="dt">Model switching</span> &mdash; change models mid-conversation. Auto-discovers Ollama, vLLM, LM Studio, ramalama, and MaaS providers at startup. Warms up local models on startup with tool-call verification.</li>
-          <li><span class="dt">Session export</span> &mdash; <code>tinycode export --format html &lt;session-id&gt;</code> exports to self-contained HTML for sharing.</li>
+          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines sharing the same process and event bus.</li>
+          <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
+          <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max).</li>
+          <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code> and <code>/redo</code> revert or restore AI file changes.</li>
+          <li><span class="dt">Diff viewer</span> &mdash; <code>/diff</code> shows uncommitted changes inline.</li>
+          <li><span class="dt">Multimodal input</span> &mdash; <code>/paste-image</code> for vision-capable models.</li>
+          <li><span class="dt">In-transcript search</span> &mdash; <code>Ctrl+F</code> to search, <code>Ctrl+N</code>/<code>Ctrl+P</code> to navigate matches.</li>
+          <li><span class="dt">Session management</span> &mdash; tree sidebar, resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export.</li>
+          <li><span class="dt">Model scoping</span> &mdash; <code>/scoped-models</code> favorites list to filter the model selector.</li>
+          <li><span class="dt">Token budget</span> &mdash; <code>--max-tokens</code> sets a cumulative limit; session aborts when exceeded.</li>
+          <li><span class="dt">Safe mode</span> &mdash; <code>--safe-mode</code> skips plugins, MCP, and user agents.</li>
         </ul>
 
         <h3 class="sub">Configuration</h3>
-<pre><span class="c"># ~/.config/tinycode/config.json</span>
-{ "<span class="k">model</span>": "<span class="s">ollama/qwen3.5:9b</span>", "<span class="k">lsp</span>": true }
+<pre><span class="c"># ~/.config/tinycode/config.json (JSONC supported)</span>
+{ "<span class="k">model</span>": "<span class="s">ollama/qwen3.5:9b</span>", "<span class="k">small_model</span>": "<span class="s">ollama/qwen3.5:1.7b</span>" }
 
-<span class="c"># Or use ramalama (container-based LLM serving)</span>
-<span class="p">$</span> ramalama serve ollama://qwen3.5:9b
-<span class="p">$</span> export TINYCODE_RAMALAMA_HOST=<span class="s">http://localhost:8080</span>
-
-<span class="c"># LM Studio auto-discovered on localhost:1234</span>
-<span class="c"># Or set a custom host:</span>
-<span class="p">$</span> export TINYCODE_LMSTUDIO_HOST=<span class="s">http://localhost:1234</span>
-
-<span class="c"># OpenRouter — 300+ models with pricing and cost tracking</span>
-<span class="p">$</span> export OPENROUTER_API_KEY=<span class="s">your-key</span>
-
-<span class="c"># Or connect to a LAN model-as-a-service server</span>
-<span class="p">$</span> export TINYCODE_MAAS_HOST=<span class="s">https://your-maas-server</span>
-<span class="p">$</span> export TINYCODE_MAAS_API_KEY=<span class="s">your-key</span></pre>
+<span class="c"># Provider auto-discovery at startup:</span>
+<span class="c"># Ollama  → 127.0.0.1:11434   (override: OLLAMA_HOST)</span>
+<span class="c"># LM Studio → 127.0.0.1:1234  (override: TINYCODE_LMSTUDIO_HOST)</span>
+<span class="c"># vLLM    → requires env var   (TINYCODE_VLLM_HOST)</span>
+<span class="c"># OpenRouter → requires key    (OPENROUTER_API_KEY)</span></pre>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════ WEB & DESKTOP ═══ -->
+    <!-- ═══════════════════════════════════════ WEB & API ═══ -->
     <section class="sec alt">
       <div class="container">
-        <div class="sec-label">Web UI &amp; Desktop</div>
-        <h2 class="sec-title">Browser and native app</h2>
-
-        <h3 class="sub" style="margin-top:0">Web UI</h3>
-        <p class="sec-desc">SolidJS + TailwindCSS web interface with the same conversation, agent, and tool capabilities as the TUI. Connects to the tinycode API server.</p>
-<pre><span class="p">$</span> tinycode serve    <span class="c"># headless API server</span>
-<span class="p">$</span> tinycode web      <span class="c"># server + web UI → http://localhost:4096</span></pre>
-
-        <h3 class="sub">Desktop app</h3>
-        <p class="sec-desc">Electron app for macOS, Windows, and Linux. Wraps the web UI in a native window.</p>
+        <div class="sec-label">Web UI &amp; API</div>
+        <h2 class="sec-title">Embedded web interface</h2>
+        <p class="sec-desc">SolidJS web UI embedded in the binary via <code>go:embed</code>. Same conversation, agent, and tool capabilities as the TUI, served from the built-in HTTP server.</p>
+<pre><span class="p">$</span> tinycode serve    <span class="c"># headless REST + SSE API server</span>
+<span class="p">$</span> tinycode web      <span class="c"># server + web UI</span></pre>
         <ul class="details">
-          <li><span class="dt">System tray</span> &mdash; menu bar (macOS) or system tray (Windows/Linux) with Show/Hide and Quit.</li>
-          <li><span class="dt">Global hotkey</span> (<code>Cmd/Ctrl+Shift+T</code>) &mdash; bring tinycode to front or minimize without closing.</li>
-          <li><span class="dt">Auto-updates</span> &mdash; checks GitHub Releases and notifies with an in-app banner.</li>
-          <li><span class="dt">Theme sync</span> &mdash; detects OS dark/light mode changes automatically.</li>
-          <li><span class="dt">Platform behaviors</span> &mdash; macOS: dock badge for notifications, Cmd+Q to quit. Windows/Linux: taskbar flash on background notifications.</li>
+          <li><span class="dt">Non-interactive mode</span> &mdash; <code>tinycode run &lt;prompt&gt;</code> runs a prompt and exits, for scripts and CI.</li>
+          <li><span class="dt">System prompt override</span> &mdash; <code>--append-system-prompt</code> and <code>--append-system-prompt-file</code> inject custom instructions.</li>
+          <li><span class="dt">External editor</span> &mdash; <code>/editor</code> opens <code>$EDITOR</code>; <code>/editor @file</code> edits a file directly.</li>
+          <li><span class="dt">Interactive shell</span> &mdash; <code>/shell</code> drops into a shell session.</li>
         </ul>
       </div>
     </section>
@@ -548,12 +531,12 @@ Trace from the HTTP handler to the token validation.</pre>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════ AGENTS & SKILLS ═══ -->
+    <!-- ═══════════════════════════════════════ AGENTS, SKILLS & PLUGINS ═══ -->
     <section class="sec alt">
       <div class="container">
-        <div class="sec-label">Agents &amp; Skills</div>
-        <h2 class="sec-title">24 agents, 9 skills, plugin SDK</h2>
-        <p class="sec-desc">Each agent has per-agent tool permissions &mdash; read-only agents get only the tools they need (~4 tools), write agents get edit access (~7 tools). This reduces prompt processing time by 80-90% on local models. Agents with a <code>.compact.md</code> variant automatically use a lighter prompt for models &le;8B parameters.</p>
+        <div class="sec-label">Agents, Skills &amp; Plugins</div>
+        <h2 class="sec-title">16 agents, 10 skills, 36 plugins</h2>
+        <p class="sec-desc">Agents with a <code>.compact.md</code> variant automatically use a smaller prompt for models with limited context windows. Plugins are standalone Go binaries communicating over JSON-RPC via stdin/stdout.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
         <div class="agent-grid">
@@ -564,49 +547,39 @@ Trace from the HTTP handler to the token validation.</pre>
           <div class="agent-item"><span class="agent-name">code-reviewer</span><br><span class="agent-role">Severity-rated review</span></div>
           <div class="agent-item"><span class="agent-name">security-reviewer</span><br><span class="agent-role">OWASP Top 10, CVEs</span></div>
           <div class="agent-item"><span class="agent-name">test-engineer</span><br><span class="agent-role">TDD workflows</span></div>
-          <div class="agent-item"><span class="agent-name">designer</span><br><span class="agent-role">UI/UX development</span></div>
-          <div class="agent-item"><span class="agent-name">cluster-admin</span><br><span class="agent-role">K8s/OpenShift ops</span></div>
-          <div class="agent-item"><span class="agent-name">git-master</span><br><span class="agent-role">Atomic commits, rebasing</span></div>
-          <div class="agent-item"><span class="agent-name">tracer</span><br><span class="agent-role">Causal tracing</span></div>
-          <div class="agent-item"><span class="agent-name">writer</span><br><span class="agent-role">Technical documentation</span></div>
-          <div class="agent-item"><span class="agent-name">critic</span><br><span class="agent-role">Quality gate</span></div>
-          <div class="agent-item"><span class="agent-name">analyst</span><br><span class="agent-role">Requirements analysis</span></div>
-          <div class="agent-item"><span class="agent-name">explore</span><br><span class="agent-role">Fast codebase search</span></div>
-          <div class="agent-item"><span class="agent-name">verifier</span><br><span class="agent-role">Completion verification</span></div>
-          <div class="agent-item"><span class="agent-name">scientist</span><br><span class="agent-role">Hypothesis-driven research</span></div>
-          <div class="agent-item"><span class="agent-name">qa-tester</span><br><span class="agent-role">CLI testing via tmux</span></div>
           <div class="agent-item"><span class="agent-name">code-simplifier</span><br><span class="agent-role">Simplify without changing behavior</span></div>
-          <div class="agent-item"><span class="agent-name">document-specialist</span><br><span class="agent-role">External docs &amp; references</span></div>
-          <div class="agent-item"><span class="agent-name">workspace</span><br><span class="agent-role">Environment setup</span></div>
-          <div class="agent-item"><span class="agent-name">agent-reviewer</span><br><span class="agent-role">Validate agent prompts</span></div>
-          <div class="agent-item"><span class="agent-name">skills-reviewer</span><br><span class="agent-role">Validate skill definitions</span></div>
-          <div class="agent-item"><span class="agent-name">rules-reviewer</span><br><span class="agent-role">Validate rule files</span></div>
+          <div class="agent-item"><span class="agent-name">git-master</span><br><span class="agent-role">Atomic commits, rebasing</span></div>
+          <div class="agent-item"><span class="agent-name">explore</span><br><span class="agent-role">Fast codebase search</span></div>
+          <div class="agent-item"><span class="agent-name">critic</span><br><span class="agent-role">Quality gate</span></div>
+          <div class="agent-item"><span class="agent-name">scientist</span><br><span class="agent-role">Hypothesis-driven research</span></div>
+          <div class="agent-item"><span class="agent-name">verifier</span><br><span class="agent-role">Completion verification</span></div>
+          <div class="agent-item"><span class="agent-name">writer</span><br><span class="agent-role">Technical documentation</span></div>
         </div>
 
         <h3 class="sub">Skills</h3>
         <p class="note">Type <code>/</code> to see available commands. Skills inject specialized instructions.</p>
         <ul class="details">
           <li><span class="dt">/debug</span> &mdash; isolate the most likely root cause for a known failure</li>
-          <li><span class="dt">/trace</span> &mdash; evidence-driven causal tracing with competing hypotheses</li>
           <li><span class="dt">/verify</span> &mdash; confirm a change works before claiming completion</li>
-          <li><span class="dt">/deepinit</span> &mdash; generate per-directory AGENTS.md files across a codebase</li>
-          <li><span class="dt">/ai-slop-cleaner</span> &mdash; clean AI-generated code with regression-safe workflow</li>
+          <li><span class="dt">/trace</span> &mdash; evidence-driven causal tracing with competing hypotheses</li>
+          <li><span class="dt">/review</span> &mdash; structured code review</li>
+          <li><span class="dt">/plan</span> &mdash; strategic planning before implementation</li>
+          <li><span class="dt">/test</span> &mdash; test strategy and coverage</li>
+          <li><span class="dt">/doctor</span> &mdash; diagnose tinycode configuration and environment issues</li>
           <li><span class="dt">/mcp-setup</span> &mdash; configure MCP servers via guided menu</li>
           <li><span class="dt">/remember</span> &mdash; triage session findings across memory surfaces</li>
-          <li><span class="dt">/configure-notifications</span> &mdash; set up Telegram, Discord, or Slack notifications</li>
-          <li><span class="dt">/tc-doctor</span> &mdash; diagnose tinycode configuration and environment issues (14 checks, pure bash)</li>
+          <li><span class="dt">/deepinit</span> &mdash; generate per-directory AGENTS.md files across a codebase</li>
         </ul>
 
         <h3 class="sub">Plugins</h3>
-        <p class="note">Extend tinycode with custom tools, providers, and lifecycle hooks via the <code>@tinycode/plugin</code> SDK. See <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/docs/plugin-development.md" target="_blank" rel="noopener">docs/plugin-development.md</a> for details.</p>
+        <p class="note">36 built-in plugins ship as standalone Go binaries. Build custom plugins with the Go SDK in <code>pkg/plugin/</code>. See <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/docs/plugin-development.md" target="_blank" rel="noopener">docs/plugin-development.md</a>.</p>
         <ul class="details">
-          <li><span class="dt">tinycode plugin-search [query]</span> &mdash; search available plugins in the curated registry</li>
-          <li><span class="dt">tinycode plugin &lt;name&gt;</span> &mdash; install a plugin (resolves registry names, npm specifiers, or <code>file://</code> paths)</li>
-          <li><span class="dt">/connect</span> &mdash; connect a new LLM provider mid-session (Ollama, vLLM, LM Studio, OpenRouter, etc.)</li>
+          <li><span class="dt">General</span> &mdash; log-sanitizer, safety-net, code-review, command-inject, context-pruning, handoff, notify, pilot, snippets, telemetry, web-search, cluster-ops</li>
+          <li><span class="dt">OpenShift</span> &mdash; ocp-oauth, ocp-context-injection, ocp-obs-metrics, ocp-obs-logging</li>
+          <li><span class="dt">Ansible</span> &mdash; aap-bridge, eda-events</li>
+          <li><span class="dt">RHOAI</span> &mdash; rhoai-serving, rhoai-pipelines, rhoai-mlflow, rhoai-experiment-tracker, rhoai-eval-trustyai, rhoai-mcp-bridge</li>
+          <li><span class="dt">Platform</span> &mdash; satellite, quay, rhdh, tekton, rhacm, rhacs, rh-api-catalog, rh-dev-content, rh-ecosystem-catalog, rhdp-provisioner, container-linter, lightwell</li>
         </ul>
-
-        <h3 class="sub">API documentation</h3>
-        <p class="note">When tinycode is running, visit <code>http://localhost:4096/api/docs</code> for interactive API reference (Scalar UI). Raw spec at <code>/api/openapi.json</code>.</p>
       </div>
     </section>
 
@@ -616,7 +589,7 @@ Trace from the HTTP handler to the token validation.</pre>
         <div class="sec-label">Container</div>
         <h2 class="sec-title">tinycode-container</h2>
         <p class="sec-desc" style="margin-bottom:0.5rem"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">github.com/bobbyjohnstx/tinycode-container</a></p>
-        <p class="sec-desc">OCI container image packaging tinycode with oh-my-tiny, tmux, and git. Built on <strong>UBI9</strong>, multi-arch (amd64 + arm64), OpenShift arbitrary-UID compatible.</p>
+        <p class="sec-desc">OCI container image packaging tinycode with tmux and git. Built on <strong>UBI9</strong>, multi-arch (amd64 + arm64), OpenShift arbitrary-UID compatible.</p>
 
 <pre><span class="c"># Run with Ollama on the host network</span>
 <span class="p">$</span> podman run <span class="f">-it</span> <span class="f">--network</span> host \
@@ -706,13 +679,13 @@ Trace from the HTTP handler to the token validation.</pre>
     <section class="sec">
       <div class="container">
         <div class="sec-label">Ecosystem</div>
-        <h2 class="sec-title">Five projects, one stack</h2>
+        <h2 class="sec-title">Four projects, one stack</h2>
         <p class="sec-desc">Use whichever level fits your environment.</p>
 
         <div class="eco-grid">
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a></div>
-            <div class="eco-desc">Core server, TUI, web UI, desktop app, agents, skills, tools, plugin SDK, and LLM provider integrations.</div>
+            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 16 agents, 10 skills, 36 built-in plugins, Go plugin SDK.</div>
           </div>
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">tinycode-container</a></div>
@@ -723,16 +696,10 @@ Trace from the HTTP handler to the token validation.</pre>
             <div class="eco-desc">Kubernetes Operator for OpenShift. TinycodeInstance CRs, Helm reconciliation, SCCs, Routes, vLLM auto-probing, self-service multi-user.</div>
           </div>
           <div class="eco-item">
-            <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-plugins" target="_blank" rel="noopener">tinycode-plugins</a></div>
-            <div class="eco-desc">37 plugins in two collections. 25 Red Hat product integrations (OpenShift, RHACS, Tekton, RHOAI, Ansible, RHACM, Satellite) and 12 general-purpose plugins (log sanitizer, safety net, context pruning, document handling, web search, notifications, telemetry).</div>
-          </div>
-          <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/homebrew-tap" target="_blank" rel="noopener">homebrew-tap</a></div>
             <div class="eco-desc">Homebrew formula for <code>brew install bobbyjohnstx/tap/tinycode</code> on macOS and Linux.</div>
           </div>
         </div>
-
-        <p class="sec-desc" style="margin-bottom:0">Built on <a href="https://github.com/sst/opencode" target="_blank" rel="noopener">opencode</a> by <a href="https://github.com/sst" target="_blank" rel="noopener">SST</a>. The core architecture &mdash; session processor, provider abstraction, tool system, and TUI &mdash; originates from the opencode project.</p>
       </div>
     </section>
 
