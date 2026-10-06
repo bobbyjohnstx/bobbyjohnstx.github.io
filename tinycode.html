@@ -402,6 +402,7 @@
           <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> provides scratch storage surviving compaction, <code>report_findings</code> for structured code review output.</li>
           <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code> for lifecycle automation; <code>additionalContext</code> lets hooks inject text into the model context.</li>
           <li><span class="dt">TUI polish</span> &mdash; redesigned status bar with visual goal tracker, frecency-ranked command palette, left sidebar, clipboard copy (<code>/copy</code>), <code>/rewind</code> to any earlier turn.</li>
+          <li><span class="dt">Security hardening</span> (v2.1.2) &mdash; path traversal prevention, shell injection guards, panic recovery on all goroutines, concurrent map guards, bounded retries, cookie secure flags. First-run <code>/connect</code> flow with Ollama/OpenRouter guidance.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
