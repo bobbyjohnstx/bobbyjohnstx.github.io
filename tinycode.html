@@ -394,15 +394,15 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.1 highlights</h2>
+        <h2 class="sec-title">v2.2 highlights</h2>
         <ul class="details">
           <li><span class="dt">Go rewrite</span> (v2.0) &mdash; single static binary, no runtime dependencies. ~20MB RSS, goroutine-based multi-agent orchestration, embedded web UI via <code>go:embed</code>, pure-Go SQLite.</li>
-          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth per session, <code>/goal</code> runs autonomous multi-turn loops until a condition is met, <code>/branch</code> forks conversations to try alternatives.</li>
-          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes context window usage with per-category breakdown, <code>/btw</code> asks side questions without polluting history, <code>/changes</code> shows only files tinycode modified.</li>
-          <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> provides scratch storage surviving compaction, <code>report_findings</code> for structured code review output.</li>
-          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code> for lifecycle automation; <code>additionalContext</code> lets hooks inject text into the model context.</li>
-          <li><span class="dt">TUI polish</span> &mdash; redesigned status bar with visual goal tracker, frecency-ranked command palette, left sidebar, clipboard copy (<code>/copy</code>), <code>/rewind</code> to any earlier turn.</li>
-          <li><span class="dt">Hardening</span> (v2.1.2&ndash;v2.1.4) &mdash; security fixes (path traversal, shell injection, panic recovery), full ACP wiring for IDE integration, web UI slash commands, polished CLI <code>run</code> mode with resume and signals, first-run <code>/connect</code> flow, and a codebase-wide honesty pass aligning docs to behavior.</li>
+          <li><span class="dt">Plan mode</span> (v2.2) &mdash; <code>plan</code> is now a native mode with read-only permissions. The LLM self-switches between build and plan via <code>plan_enter</code>/<code>plan_exit</code> tools. Agent count reduced from 16 to 14.</li>
+          <li><span class="dt">/init and MCP CLI</span> (v2.2) &mdash; <code>/init</code> generates root <code>AGENTS.md</code> from repo ecosystem detection. <code>tinycode mcp list|add|auth|debug</code> manages MCP servers from the command line.</li>
+          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops, <code>/branch</code> forks conversations. Prompt stash (<code>Ctrl+S</code>) and history browser (<code>Ctrl+R</code>).</li>
+          <li><span class="dt">Context and tools</span> &mdash; <code>/context</code> visualizes usage, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files. <code>monitor</code>, <code>notepad</code>, and <code>report_findings</code> built-in tools.</li>
+          <li><span class="dt">TUI polish</span> &mdash; LSP diagnostics in sidebar, fork from rewind dialog, frecency-ranked command palette, visual goal tracker, clipboard copy (<code>/copy</code>), hooks with <code>additionalContext</code>.</li>
+          <li><span class="dt">Hardening</span> (v2.1&ndash;v2.2) &mdash; CORS lockdown, shell endpoint gating, SQLite <code>chmod 0600</code>, <code>webfetch</code> scheme checks, full ACP wiring, first-run <code>/connect</code> flow, codebase-wide honesty pass.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -535,7 +535,7 @@ Trace from the HTTP handler to the token validation.</pre>
     <section class="sec alt">
       <div class="container">
         <div class="sec-label">Agents, Skills &amp; Plugins</div>
-        <h2 class="sec-title">16 agents, 10 skills, 36 plugins</h2>
+        <h2 class="sec-title">14 agents, 10 skills, 36 plugins</h2>
         <p class="sec-desc">Agents with a <code>.compact.md</code> variant automatically use a smaller prompt for models with limited context windows. Plugins are standalone Go binaries communicating over JSON-RPC via stdin/stdout.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
@@ -543,7 +543,6 @@ Trace from the HTTP handler to the token validation.</pre>
           <div class="agent-item"><span class="agent-name">architect</span><br><span class="agent-role">Read-only code analysis</span></div>
           <div class="agent-item"><span class="agent-name">debugger</span><br><span class="agent-role">Root-cause analysis</span></div>
           <div class="agent-item"><span class="agent-name">executor</span><br><span class="agent-role">Focused implementation</span></div>
-          <div class="agent-item"><span class="agent-name">planner</span><br><span class="agent-role">Strategic work plans</span></div>
           <div class="agent-item"><span class="agent-name">code-reviewer</span><br><span class="agent-role">Severity-rated review</span></div>
           <div class="agent-item"><span class="agent-name">security-reviewer</span><br><span class="agent-role">OWASP Top 10, CVEs</span></div>
           <div class="agent-item"><span class="agent-name">test-engineer</span><br><span class="agent-role">TDD workflows</span></div>
@@ -685,7 +684,7 @@ Trace from the HTTP handler to the token validation.</pre>
         <div class="eco-grid">
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a></div>
-            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 16 agents, 10 skills, 36 built-in plugins, Go plugin SDK.</div>
+            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 14 agents, 10 skills, 36 built-in plugins, Go plugin SDK.</div>
           </div>
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">tinycode-container</a></div>
