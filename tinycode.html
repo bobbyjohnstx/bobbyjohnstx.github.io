@@ -394,15 +394,15 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.2 highlights</h2>
+        <h2 class="sec-title">v2.3 highlights</h2>
         <ul class="details">
-          <li><span class="dt">Go rewrite</span> (v2.0) &mdash; single static binary, no runtime dependencies. ~20MB RSS, goroutine-based multi-agent orchestration, embedded web UI via <code>go:embed</code>, pure-Go SQLite.</li>
-          <li><span class="dt">Plan mode</span> (v2.2) &mdash; <code>plan</code> is now a native mode with read-only permissions. The LLM self-switches between build and plan via <code>plan_enter</code>/<code>plan_exit</code> tools. Agent count reduced from 16 to 14.</li>
-          <li><span class="dt">/init and MCP CLI</span> (v2.2) &mdash; <code>/init</code> generates root <code>AGENTS.md</code> from repo ecosystem detection. <code>tinycode mcp list|add|auth|debug</code> manages MCP servers from the command line.</li>
-          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops, <code>/branch</code> forks conversations. Prompt stash (<code>Ctrl+S</code>) and history browser (<code>Ctrl+R</code>).</li>
-          <li><span class="dt">Context and tools</span> &mdash; <code>/context</code> visualizes usage, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files. <code>monitor</code>, <code>notepad</code>, and <code>report_findings</code> built-in tools.</li>
-          <li><span class="dt">TUI polish</span> &mdash; LSP diagnostics in sidebar, fork from rewind dialog, frecency-ranked command palette, visual goal tracker, clipboard copy (<code>/copy</code>), hooks with <code>additionalContext</code>.</li>
-          <li><span class="dt">Hardening</span> (v2.1&ndash;v2.2) &mdash; CORS lockdown, shell endpoint gating, SQLite <code>chmod 0600</code>, <code>webfetch</code> scheme checks, full ACP wiring, first-run <code>/connect</code> flow, codebase-wide honesty pass.</li>
+          <li><span class="dt">ops agent</span> (v2.3) &mdash; cluster and host administration agent. New skills <code>/incident</code>, <code>/change</code>, and <code>/host</code>. Cluster and host mutations (oc/kubectl apply, systemctl, firewall) require confirmation.</li>
+          <li><span class="dt">20 agents</span> (v2.3) &mdash; added <code>build</code>, <code>general</code>, <code>ops</code>, <code>analyst</code>, <code>designer</code>, <code>document-specialist</code>, <code>tracer</code>, and <code>scout</code>. Slash commands like <code>/debug</code> and <code>/review</code> now invoke the matching agent directly.</li>
+          <li><span class="dt">Auto-formatter</span> (v2.3) &mdash; runs after <code>write</code>, <code>edit</code>, and <code>apply_patch</code>. Built-in <code>gofmt</code> for <code>.go</code> files.</li>
+          <li><span class="dt">Plan mode and /init</span> (v2.2) &mdash; <code>plan</code> is a native mode with <code>plan_enter</code>/<code>plan_exit</code> tools. <code>/init</code> generates <code>AGENTS.md</code> from repo ecosystem detection. MCP CLI subcommands.</li>
+          <li><span class="dt">Workflow</span> &mdash; <code>/effort</code>, <code>/goal</code>, <code>/branch</code>, prompt stash (<code>Ctrl+S</code>), history browser (<code>Ctrl+R</code>). Doom loop detection stops after repeated identical tool calls.</li>
+          <li><span class="dt">TUI</span> &mdash; LSP diagnostics in sidebar, fork from rewind, frecency command palette, <code>/context</code> usage breakdown, <code>/btw</code> side questions, <code>/copy</code> clipboard.</li>
+          <li><span class="dt">Security</span> &mdash; child processes drop credentials, secret-file access requires permission, CORS locked to own origin, cluster/host mutation confirmation gates.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -535,35 +535,39 @@ Trace from the HTTP handler to the token validation.</pre>
     <section class="sec alt">
       <div class="container">
         <div class="sec-label">Agents, Skills &amp; Plugins</div>
-        <h2 class="sec-title">14 agents, 10 skills, 36 plugins</h2>
-        <p class="sec-desc">Agents with a <code>.compact.md</code> variant automatically use a smaller prompt for models with limited context windows. Plugins are standalone Go binaries communicating over JSON-RPC via stdin/stdout.</p>
+        <h2 class="sec-title">20 agents, 7 skills, 36 plugins</h2>
+        <p class="sec-desc">Tab cycles <code>build</code>, <code>general</code>, <code>ops</code>, <code>plan</code>, <code>architect</code>, <code>code-reviewer</code>. Models at 8B and under receive compact prompts. Plugins are standalone Go binaries over JSON-RPC.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
         <div class="agent-grid">
-          <div class="agent-item"><span class="agent-name">architect</span><br><span class="agent-role">Read-only code analysis</span></div>
-          <div class="agent-item"><span class="agent-name">debugger</span><br><span class="agent-role">Root-cause analysis</span></div>
-          <div class="agent-item"><span class="agent-name">executor</span><br><span class="agent-role">Focused implementation</span></div>
+          <div class="agent-item"><span class="agent-name">build</span><br><span class="agent-role">Default, delegates to specialists</span></div>
+          <div class="agent-item"><span class="agent-name">general</span><br><span class="agent-role">Plain assistant</span></div>
+          <div class="agent-item"><span class="agent-name">ops</span><br><span class="agent-role">Cluster &amp; host administration</span></div>
+          <div class="agent-item"><span class="agent-name">plan</span><br><span class="agent-role">Read-only research &amp; planning</span></div>
+          <div class="agent-item"><span class="agent-name">architect</span><br><span class="agent-role">Design and trade-offs</span></div>
           <div class="agent-item"><span class="agent-name">code-reviewer</span><br><span class="agent-role">Severity-rated review</span></div>
-          <div class="agent-item"><span class="agent-name">security-reviewer</span><br><span class="agent-role">OWASP Top 10, CVEs</span></div>
-          <div class="agent-item"><span class="agent-name">test-engineer</span><br><span class="agent-role">TDD workflows</span></div>
-          <div class="agent-item"><span class="agent-name">code-simplifier</span><br><span class="agent-role">Simplify without changing behavior</span></div>
-          <div class="agent-item"><span class="agent-name">git-master</span><br><span class="agent-role">Atomic commits, rebasing</span></div>
+          <div class="agent-item"><span class="agent-name">debugger</span><br><span class="agent-role">Root-cause analysis</span></div>
+          <div class="agent-item"><span class="agent-name">executor</span><br><span class="agent-role">Scoped code changes</span></div>
+          <div class="agent-item"><span class="agent-name">analyst</span><br><span class="agent-role">Acceptance criteria</span></div>
+          <div class="agent-item"><span class="agent-name">critic</span><br><span class="agent-role">Plan and gap review</span></div>
+          <div class="agent-item"><span class="agent-name">designer</span><br><span class="agent-role">UI implementation</span></div>
+          <div class="agent-item"><span class="agent-name">document-specialist</span><br><span class="agent-role">External docs &amp; references</span></div>
           <div class="agent-item"><span class="agent-name">explore</span><br><span class="agent-role">Fast codebase search</span></div>
-          <div class="agent-item"><span class="agent-name">critic</span><br><span class="agent-role">Quality gate</span></div>
-          <div class="agent-item"><span class="agent-name">scientist</span><br><span class="agent-role">Hypothesis-driven research</span></div>
-          <div class="agent-item"><span class="agent-name">verifier</span><br><span class="agent-role">Completion verification</span></div>
+          <div class="agent-item"><span class="agent-name">git-master</span><br><span class="agent-role">Commits, rebase, history</span></div>
+          <div class="agent-item"><span class="agent-name">scout</span><br><span class="agent-role">Upstream dependency source</span></div>
+          <div class="agent-item"><span class="agent-name">security-reviewer</span><br><span class="agent-role">OWASP Top 10, CVEs</span></div>
+          <div class="agent-item"><span class="agent-name">test-engineer</span><br><span class="agent-role">Tests and TDD</span></div>
+          <div class="agent-item"><span class="agent-name">tracer</span><br><span class="agent-role">Competing explanations</span></div>
+          <div class="agent-item"><span class="agent-name">verifier</span><br><span class="agent-role">Proof a change works</span></div>
           <div class="agent-item"><span class="agent-name">writer</span><br><span class="agent-role">Technical documentation</span></div>
         </div>
 
-        <h3 class="sub">Skills</h3>
-        <p class="note">Type <code>/</code> to see available commands. Skills inject specialized instructions.</p>
+        <h3 class="sub">Skills &amp; slash commands</h3>
+        <p class="note">Slash commands like <code>/debug</code>, <code>/review</code>, <code>/trace</code>, <code>/plan</code>, <code>/verify</code>, and <code>/test</code> invoke the matching agent. Bundled skills provide checklists and workflows.</p>
         <ul class="details">
-          <li><span class="dt">/debug</span> &mdash; isolate the most likely root cause for a known failure</li>
-          <li><span class="dt">/verify</span> &mdash; confirm a change works before claiming completion</li>
-          <li><span class="dt">/trace</span> &mdash; evidence-driven causal tracing with competing hypotheses</li>
-          <li><span class="dt">/review</span> &mdash; structured code review</li>
-          <li><span class="dt">/plan</span> &mdash; strategic planning before implementation</li>
-          <li><span class="dt">/test</span> &mdash; test strategy and coverage</li>
+          <li><span class="dt">/incident</span> &mdash; incident response checklist for the ops agent</li>
+          <li><span class="dt">/change</span> &mdash; change management workflow for the ops agent</li>
+          <li><span class="dt">/host</span> &mdash; host administration checklist for the ops agent</li>
           <li><span class="dt">/doctor</span> &mdash; diagnose tinycode configuration and environment issues</li>
           <li><span class="dt">/mcp-setup</span> &mdash; configure MCP servers via guided menu</li>
           <li><span class="dt">/remember</span> &mdash; triage session findings across memory surfaces</li>
@@ -684,7 +688,7 @@ Trace from the HTTP handler to the token validation.</pre>
         <div class="eco-grid">
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a></div>
-            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 14 agents, 10 skills, 36 built-in plugins, Go plugin SDK.</div>
+            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 20 agents, 7 skills, 36 built-in plugins, Go plugin SDK.</div>
           </div>
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">tinycode-container</a></div>
