@@ -402,6 +402,7 @@
           <li><span class="dt">Plan mode and /init</span> (v2.2) &mdash; <code>plan</code> is a native mode with <code>plan_enter</code>/<code>plan_exit</code> tools. <code>/init</code> generates <code>AGENTS.md</code> from repo ecosystem detection. MCP CLI subcommands.</li>
           <li><span class="dt">Workflow</span> &mdash; <code>/effort</code>, <code>/goal</code>, <code>/branch</code>, prompt stash (<code>Ctrl+S</code>), history browser (<code>Ctrl+R</code>). Doom loop detection stops after repeated identical tool calls.</li>
           <li><span class="dt">TUI</span> &mdash; LSP diagnostics in sidebar, fork from rewind, frecency command palette, <code>/context</code> usage breakdown, <code>/btw</code> side questions, <code>/copy</code> clipboard.</li>
+          <li><span class="dt">Agent efficiency</span> (v2.3.3) &mdash; compact prompt threshold raised to 14B (9B models get simpler prompts). Verification loops removed from reviewers. Code-reviewer reduced from 100&ndash;649K to 23K tokens on a real codebase. Files-already-read hint prevents re-read spirals after compaction.</li>
           <li><span class="dt">Security</span> &mdash; child processes drop credentials, secret-file access requires permission, CORS locked to own origin, cluster/host mutation confirmation gates.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
@@ -536,7 +537,7 @@ Trace from the HTTP handler to the token validation.</pre>
       <div class="container">
         <div class="sec-label">Agents, Skills &amp; Plugins</div>
         <h2 class="sec-title">20 agents, 7 skills, 36 plugins</h2>
-        <p class="sec-desc">Tab cycles <code>build</code>, <code>general</code>, <code>ops</code>, <code>plan</code>, <code>architect</code>, <code>code-reviewer</code>. Models at 8B and under receive compact prompts. Plugins are standalone Go binaries over JSON-RPC.</p>
+        <p class="sec-desc">Tab cycles <code>build</code>, <code>general</code>, <code>ops</code>, <code>plan</code>, <code>architect</code>, <code>code-reviewer</code>. Models at 14B and under receive compact prompts. Plugins are standalone Go binaries over JSON-RPC.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
         <div class="agent-grid">
