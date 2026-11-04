@@ -394,16 +394,16 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.3 highlights</h2>
+        <h2 class="sec-title">v2.7 highlights</h2>
         <ul class="details">
-          <li><span class="dt">ops agent</span> (v2.3) &mdash; cluster and host administration agent. New skills <code>/incident</code>, <code>/change</code>, and <code>/host</code>. Cluster and host mutations (oc/kubectl apply, systemctl, firewall) require confirmation.</li>
-          <li><span class="dt">20 agents</span> (v2.3) &mdash; added <code>build</code>, <code>general</code>, <code>ops</code>, <code>analyst</code>, <code>designer</code>, <code>document-specialist</code>, <code>tracer</code>, and <code>scout</code>. Slash commands like <code>/debug</code> and <code>/review</code> now invoke the matching agent directly.</li>
-          <li><span class="dt">Auto-formatter</span> (v2.3) &mdash; runs after <code>write</code>, <code>edit</code>, and <code>apply_patch</code>. Built-in <code>gofmt</code> for <code>.go</code> files.</li>
-          <li><span class="dt">Plan mode and /init</span> (v2.2) &mdash; <code>plan</code> is a native mode with <code>plan_enter</code>/<code>plan_exit</code> tools. <code>/init</code> generates <code>AGENTS.md</code> from repo ecosystem detection. MCP CLI subcommands.</li>
-          <li><span class="dt">Workflow</span> &mdash; <code>/effort</code>, <code>/goal</code>, <code>/branch</code>, prompt stash (<code>Ctrl+S</code>), history browser (<code>Ctrl+R</code>). Doom loop detection stops after repeated identical tool calls.</li>
-          <li><span class="dt">TUI</span> &mdash; LSP diagnostics in sidebar, fork from rewind, frecency command palette, <code>/context</code> usage breakdown, <code>/btw</code> side questions, <code>/copy</code> clipboard.</li>
-          <li><span class="dt">Agent efficiency</span> (v2.3.3) &mdash; compact prompt threshold raised to 14B (9B models get simpler prompts). Verification loops removed from reviewers. Code-reviewer reduced from 100&ndash;649K to 23K tokens on a real codebase. Files-already-read hint prevents re-read spirals after compaction.</li>
-          <li><span class="dt">Security</span> &mdash; child processes drop credentials, secret-file access requires permission, CORS locked to own origin, cluster/host mutation confirmation gates.</li>
+          <li><span class="dt">Collapsed output</span> (v2.7) &mdash; tool blocks and thoughts collapsed by default. Press <code>V</code> to expand tools, <code>T</code> for thoughts, click to expand individual. Consecutive reads grouped into a single summary line.</li>
+          <li><span class="dt">Remote attach</span> (v2.5) &mdash; <code>tinycode attach &lt;url&gt;</code> connects a TUI to a headless <code>tinycode serve</code> instance. <code>tinycode export --sanitize</code> redacts paths and secrets for sharing.</li>
+          <li><span class="dt">Run mode</span> (v2.6) &mdash; fail-closed questions in non-interactive mode, JSON permission hardening, <code>--fail-on-tool-error</code> for CI pipelines, proper SIGINT handling.</li>
+          <li><span class="dt">Plugin management</span> (v2.4&ndash;v2.5) &mdash; <code>plugin search</code>, <code>plugin init</code> scaffolding, release bundles with SHA-256 checksums, <code>install --enable</code> flag.</li>
+          <li><span class="dt">23 agents</span> (v2.5+) &mdash; added <code>code-simplifier</code>, <code>qa-tester</code>, and <code>scientist</code>. <code>/swarm</code> lists specialist subagent types for parallel dispatch.</li>
+          <li><span class="dt">IDE integration</span> (v2.5) &mdash; ACP question relay via elicitation, streaming deltas, session modes, model gate with discovery wait, edit tool diffs.</li>
+          <li><span class="dt">Markdown styles</span> (v2.7) &mdash; <code>/markdown-style</code> with dark, light, muted, colorful, notty &mdash; independent from theme.</li>
+          <li><span class="dt">Provider config</span> (v2.7) &mdash; vLLM context inferred from model family, config-based endpoints (<code>provider.&lt;name&gt;.options.baseURL</code>) with env-var-wins precedence.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -474,15 +474,17 @@ Trace from the HTTP handler to the token validation.</pre>
 
         <h3 class="sub">Key features</h3>
         <ul class="details">
-          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines; <code>--plan</code> shows decomposition before dispatch.</li>
+          <li><span class="dt">Collapsed output</span> &mdash; tool blocks and thoughts collapsed by default. <code>V</code> expands all tools, <code>T</code> expands thoughts, click for individual. Consecutive reads grouped into summary lines.</li>
+          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines with specialist subagent types (code-reviewer, security-reviewer, test-engineer, architect, debugger); <code>--plan</code> shows decomposition before dispatch.</li>
           <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops until a condition is met, <code>/branch</code> forks conversations.</li>
+          <li><span class="dt">Markdown styles</span> &mdash; <code>/markdown-style</code> with dark, light, muted, colorful, notty &mdash; independent from theme.</li>
           <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
           <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max).</li>
           <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code>, <code>/redo</code>, and <code>/rewind</code> to any earlier conversation turn.</li>
           <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
           <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
-          <li><span class="dt">Frecency command palette</span> &mdash; ranked by usage frequency + recency.</li>
-          <li><span class="dt">Session management</span> &mdash; left sidebar, resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>).</li>
+          <li><span class="dt">Plugin management</span> &mdash; <code>plugin search</code>, <code>plugin init</code> scaffolding, release bundles with SHA-256 checksums.</li>
+          <li><span class="dt">Session management</span> &mdash; resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>).</li>
           <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code>; <code>additionalContext</code> injects text into model context.</li>
         </ul>
 
@@ -505,12 +507,14 @@ Trace from the HTTP handler to the token validation.</pre>
         <h2 class="sec-title">Embedded web interface</h2>
         <p class="sec-desc">SolidJS web UI embedded in the binary via <code>go:embed</code>. Same conversation, agent, and tool capabilities as the TUI, served from the built-in HTTP server.</p>
 <pre><span class="p">$</span> tinycode serve    <span class="c"># headless REST + SSE API server</span>
-<span class="p">$</span> tinycode web      <span class="c"># server + web UI</span></pre>
+<span class="p">$</span> tinycode web      <span class="c"># server + web UI</span>
+<span class="p">$</span> tinycode attach <span class="s">http://host:4096</span>  <span class="c"># remote TUI client</span></pre>
         <ul class="details">
-          <li><span class="dt">Non-interactive mode</span> &mdash; <code>tinycode run &lt;prompt&gt;</code> runs a prompt and exits, for scripts and CI.</li>
+          <li><span class="dt">Non-interactive mode</span> &mdash; <code>tinycode run &lt;prompt&gt;</code> runs a prompt and exits. <code>--fail-on-tool-error</code> for CI pipelines, fail-closed question handling, JSON permission hardening.</li>
+          <li><span class="dt">Remote attach</span> &mdash; <code>tinycode attach &lt;url&gt;</code> connects a full TUI to a headless <code>tinycode serve</code> instance.</li>
+          <li><span class="dt">Import / export</span> &mdash; <code>tinycode export --sanitize</code> redacts paths, secrets, and tool args. <code>tinycode import</code> restores session from JSON.</li>
           <li><span class="dt">System prompt override</span> &mdash; <code>--append-system-prompt</code> and <code>--append-system-prompt-file</code> inject custom instructions.</li>
           <li><span class="dt">External editor</span> &mdash; <code>/editor</code> opens <code>$EDITOR</code>; <code>/editor @file</code> edits a file directly.</li>
-          <li><span class="dt">Interactive shell</span> &mdash; <code>/shell</code> drops into a shell session.</li>
         </ul>
       </div>
     </section>
@@ -536,7 +540,7 @@ Trace from the HTTP handler to the token validation.</pre>
     <section class="sec alt">
       <div class="container">
         <div class="sec-label">Agents, Skills &amp; Plugins</div>
-        <h2 class="sec-title">20 agents, 7 skills, 36 plugins</h2>
+        <h2 class="sec-title">23 agents, 7 skills, 36 plugins</h2>
         <p class="sec-desc">Tab cycles <code>build</code>, <code>general</code>, <code>ops</code>, <code>plan</code>, <code>architect</code>, <code>code-reviewer</code>. Models at 14B and under receive compact prompts. Plugins are standalone Go binaries over JSON-RPC.</p>
 
         <h3 class="sub" style="margin-top:0">Built-in agents</h3>
@@ -547,6 +551,7 @@ Trace from the HTTP handler to the token validation.</pre>
           <div class="agent-item"><span class="agent-name">plan</span><br><span class="agent-role">Read-only research &amp; planning</span></div>
           <div class="agent-item"><span class="agent-name">architect</span><br><span class="agent-role">Design and trade-offs</span></div>
           <div class="agent-item"><span class="agent-name">code-reviewer</span><br><span class="agent-role">Severity-rated review</span></div>
+          <div class="agent-item"><span class="agent-name">code-simplifier</span><br><span class="agent-role">Clarity and maintainability</span></div>
           <div class="agent-item"><span class="agent-name">debugger</span><br><span class="agent-role">Root-cause analysis</span></div>
           <div class="agent-item"><span class="agent-name">executor</span><br><span class="agent-role">Scoped code changes</span></div>
           <div class="agent-item"><span class="agent-name">analyst</span><br><span class="agent-role">Acceptance criteria</span></div>
@@ -555,6 +560,8 @@ Trace from the HTTP handler to the token validation.</pre>
           <div class="agent-item"><span class="agent-name">document-specialist</span><br><span class="agent-role">External docs &amp; references</span></div>
           <div class="agent-item"><span class="agent-name">explore</span><br><span class="agent-role">Fast codebase search</span></div>
           <div class="agent-item"><span class="agent-name">git-master</span><br><span class="agent-role">Commits, rebase, history</span></div>
+          <div class="agent-item"><span class="agent-name">qa-tester</span><br><span class="agent-role">Interactive CLI testing</span></div>
+          <div class="agent-item"><span class="agent-name">scientist</span><br><span class="agent-role">Data analysis &amp; research</span></div>
           <div class="agent-item"><span class="agent-name">scout</span><br><span class="agent-role">Upstream dependency source</span></div>
           <div class="agent-item"><span class="agent-name">security-reviewer</span><br><span class="agent-role">OWASP Top 10, CVEs</span></div>
           <div class="agent-item"><span class="agent-name">test-engineer</span><br><span class="agent-role">Tests and TDD</span></div>
@@ -578,11 +585,13 @@ Trace from the HTTP handler to the token validation.</pre>
         <h3 class="sub">Plugins</h3>
         <p class="note">36 built-in plugins ship as standalone Go binaries. Build custom plugins with the Go SDK in <code>pkg/plugin/</code>. See <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/docs/plugin-development.md" target="_blank" rel="noopener">docs/plugin-development.md</a>.</p>
         <ul class="details">
-          <li><span class="dt">General</span> &mdash; log-sanitizer, safety-net, code-review, command-inject, context-pruning, handoff, notify, pilot, snippets, telemetry, web-search, cluster-ops</li>
-          <li><span class="dt">OpenShift</span> &mdash; ocp-oauth, ocp-context-injection, ocp-obs-metrics, ocp-obs-logging</li>
-          <li><span class="dt">Ansible</span> &mdash; aap-bridge, eda-events</li>
-          <li><span class="dt">RHOAI</span> &mdash; rhoai-serving, rhoai-pipelines, rhoai-mlflow, rhoai-experiment-tracker, rhoai-eval-trustyai, rhoai-mcp-bridge</li>
+          <li><span class="dt">Built-in</span> &mdash; code-review, context-pruning, handoff, notify</li>
+          <li><span class="dt">General</span> &mdash; log-sanitizer, safety-net, pilot, telemetry, wiki</li>
+          <li><span class="dt">OpenShift</span> &mdash; ocp-context-injection, ocp-obs-metrics, ocp-obs-logging, ocp-must-gather, ocp-odf, ocp-virt</li>
+          <li><span class="dt">Ansible</span> &mdash; aap-bridge</li>
+          <li><span class="dt">RHOAI</span> &mdash; rhoai-serving, rhoai-pipelines, rhoai-mlflow</li>
           <li><span class="dt">Platform</span> &mdash; satellite, quay, rhdh, tekton, rhacm, rhacs, rh-api-catalog, rh-dev-content, rh-ecosystem-catalog, rhdp-provisioner, container-linter, lightwell</li>
+          <li><span class="dt">Diagnostics</span> &mdash; audit-logs, etcd-diag, ingress-inspect, insights, semgrep</li>
         </ul>
       </div>
     </section>
@@ -689,7 +698,7 @@ Trace from the HTTP handler to the token validation.</pre>
         <div class="eco-grid">
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode" target="_blank" rel="noopener">tinycode</a></div>
-            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 20 agents, 7 skills, 36 built-in plugins, Go plugin SDK.</div>
+            <div class="eco-desc">Single Go binary. TUI, embedded HTTP server + web UI, 23 agents, 7 skills, 36 built-in plugins, Go plugin SDK.</div>
           </div>
           <div class="eco-item">
             <div class="eco-name"><a href="https://github.com/bobbyjohnstx/tinycode-container" target="_blank" rel="noopener">tinycode-container</a></div>
