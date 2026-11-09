@@ -262,12 +262,14 @@
     }
 
     .article-item {
-      display: block;
+      display: flex;
+      gap: 1.25rem;
       text-decoration: none;
       color: inherit;
-      padding: 1.5rem 0;
+      padding: 1.25rem 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       transition: padding-left 0.15s ease;
+      align-items: flex-start;
     }
 
     .article-item:first-child {
@@ -280,6 +282,20 @@
 
     .article-item:hover .article-title {
       color: var(--teal-50);
+    }
+
+    .article-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--gray-80);
+    }
+
+    .article-body {
+      flex: 1;
+      min-width: 0;
     }
 
     .article-header {
@@ -436,6 +452,11 @@
 
       .tinycode {
         padding: 5rem 0;
+      }
+
+      .article-thumb {
+        width: 48px;
+        height: 48px;
       }
     }
   </style>
@@ -604,51 +625,41 @@
     <section class="writing" id="writing">
       <div class="container">
         <h2 class="section-label">Writing</h2>
-        <div class="repo-list" role="list">
+        <div id="blog-posts" class="repo-list" role="list">
 
-          <a href="https://medium.com/@bjohns_49809/the-real-threat-to-nvidias-crown-dd90113b2199" class="article-item" role="listitem" target="_blank" rel="noopener">
-            <div class="article-header">
-              <span class="article-title">The Real Threat to NVIDIA's Crown</span>
-              <span class="article-date">2025</span>
+          <a href="https://blinkylights.com/the-real-threat-to-nvidias-crown/" class="article-item" role="listitem" target="_blank" rel="noopener">
+            <div class="article-body">
+              <div class="article-header">
+                <span class="article-title">The Real Threat to NVIDIA's Crown</span>
+                <span class="article-date">2025</span>
+              </div>
+              <p class="article-desc">How DeepSeek and Huawei upended AI infrastructure economics.</p>
             </div>
-            <p class="article-desc">How DeepSeek and Huawei upended AI infrastructure economics.</p>
           </a>
 
-          <a href="https://medium.com/@bjohns_49809/why-dmzs-dont-always-cut-it-anymore-252f7da333dd" class="article-item" role="listitem" target="_blank" rel="noopener">
-            <div class="article-header">
-              <span class="article-title">Why DMZs Don't Always Cut It Anymore</span>
-              <span class="article-date">May 2025</span>
+          <a href="https://blinkylights.com/why-dmzs-dont-always-cut-it-anymore/" class="article-item" role="listitem" target="_blank" rel="noopener">
+            <div class="article-body">
+              <div class="article-header">
+                <span class="article-title">Why DMZs Don't Always Cut It Anymore</span>
+                <span class="article-date">May 2025</span>
+              </div>
+              <p class="article-desc">A deeper look at modern security gaps.</p>
             </div>
-            <p class="article-desc">A deeper look at modern security gaps.</p>
           </a>
 
-          <a href="https://medium.com/@bjohns_49809/gen-ai-on-openshift-series-episode-3-e77b746d607e" class="article-item" role="listitem" target="_blank" rel="noopener">
-            <div class="article-header">
-              <span class="article-title">Gen AI on OpenShift &mdash; Episode 3</span>
-              <span class="article-date">Oct 2023</span>
+          <a href="https://blinkylights.com/gen-ai-on-openshift-series-episode-3/" class="article-item" role="listitem" target="_blank" rel="noopener">
+            <div class="article-body">
+              <div class="article-header">
+                <span class="article-title">Gen AI on OpenShift &mdash; Episode 3</span>
+                <span class="article-date">Oct 2023</span>
+              </div>
+              <p class="article-desc">Building generative AI containers with Podman.</p>
             </div>
-            <p class="article-desc">Building generative AI containers with Podman.</p>
-          </a>
-
-          <a href="https://medium.com/@bjohns_49809/gen-ai-on-openshift-series-episode-2-16a0b16d2a5a" class="article-item" role="listitem" target="_blank" rel="noopener">
-            <div class="article-header">
-              <span class="article-title">Gen AI on OpenShift &mdash; Episode 2</span>
-              <span class="article-date">Sep 2023</span>
-            </div>
-            <p class="article-desc">Building the solid foundations for AI success.</p>
-          </a>
-
-          <a href="https://medium.com/@bjohns_49809/gen-ai-on-openshift-series-episode-1-5ca7bf696259" class="article-item" role="listitem" target="_blank" rel="noopener">
-            <div class="article-header">
-              <span class="article-title">Gen AI on OpenShift &mdash; Episode 1</span>
-              <span class="article-date">Aug 2023</span>
-            </div>
-            <p class="article-desc">Generative AI in the real world on powerful platforms.</p>
           </a>
 
         </div>
         <div class="writing-more">
-          <a href="https://medium.com/@bjohns_49809" target="_blank" rel="noopener">All posts on Medium &rarr;</a>
+          <a href="https://blinkylights.com/" target="_blank" rel="noopener">All posts on blinkylights.com &rarr;</a>
         </div>
       </div>
     </section>
@@ -661,5 +672,51 @@
     </div>
   </footer>
 
+<script>
+(function () {
+  var container = document.getElementById('blog-posts');
+  if (!container) return;
+
+  var API = 'https://blinkylights.com/wp-json/wp/v2/posts?per_page=10&_embed';
+
+  fetch(API)
+    .then(function (res) { return res.json(); })
+    .then(function (posts) {
+      var html = '';
+      posts.forEach(function (post) {
+        var title = post.title.rendered;
+        var link = post.link;
+        var desc = post.excerpt.rendered.replace(/<[^>]+>/g, '').trim();
+        if (desc.length > 140) desc = desc.slice(0, 137) + '…';
+        var date = new Date(post.date);
+        var dateStr = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+        var thumbUrl = '';
+        var media = ((post._embedded || {})['wp:featuredmedia'] || [])[0];
+        if (media) {
+          var sizes = (media.media_details || {}).sizes || {};
+          var pick = sizes.thumbnail || sizes.medium || {};
+          thumbUrl = pick.source_url || '';
+        }
+
+        var thumbHtml = thumbUrl
+          ? '<img class="article-thumb" src="' + thumbUrl + '" alt="" loading="lazy" width="64" height="64">'
+          : '';
+
+        html += '<a href="' + link + '" class="article-item" role="listitem" target="_blank" rel="noopener">'
+          + thumbHtml
+          + '<div class="article-body">'
+          + '<div class="article-header">'
+          + '<span class="article-title">' + title + '</span>'
+          + '<span class="article-date">' + dateStr + '</span>'
+          + '</div>'
+          + '<p class="article-desc">' + desc + '</p>'
+          + '</div></a>';
+      });
+      container.innerHTML = html;
+    })
+    .catch(function () {});
+})();
+</script>
 </body>
 </html>

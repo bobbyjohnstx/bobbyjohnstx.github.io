@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal GitHub Pages site for Bobby Johns (bobbyjohnstx.github.io). Static site with two HTML files (`index.html` and `tinycode.html`), inline CSS, no build step, no JavaScript, no frameworks.
+Personal GitHub Pages site for Bobby Johns (bobbyjohnstx.github.io). Static site with two HTML files (`index.html` and `tinycode.html`), inline CSS, no build step, no frameworks. Minimal JavaScript: `index.html` fetches the last 10 blog posts from `blinkylights.com/wp-json/wp/v2/posts?_embed` with static fallback.
 
 ## Development
 
@@ -23,5 +23,5 @@ Uses the **official Red Hat color palette and typography** from the Red Hat Bran
 ## Content Sources
 
 - **GitHub repos:** Fetched via `gh repo list bobbyjohnstx --visibility=public --json name,description,url,stargazerCount,primaryLanguage`
-- **Medium articles:** Profile at `https://medium.com/@bjohns_49809`
+- **Blog:** `https://blinkylights.com/`
 - **LinkedIn:** `https://www.linkedin.com/in/bobbyjohns/` — 25+ years in tech, Red Hat, Dallas TX
