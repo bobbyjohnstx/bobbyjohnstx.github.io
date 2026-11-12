@@ -403,16 +403,16 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.7 highlights</h2>
+        <h2 class="sec-title">v2.8 highlights</h2>
         <ul class="details">
+          <li><span class="dt">/thinking everywhere</span> (v2.8) &mdash; <code>/thinking</code> now works on all providers: vLLM (<code>thinking_token_budget</code>), LM Studio and OpenRouter (<code>reasoning_effort</code>), Ollama (<code>think</code>), Anthropic (native). <code>/thinking off</code> actually disables reasoning on each.</li>
+          <li><span class="dt">Gemini 3.x support</span> (v2.8) &mdash; <code>thought_signature</code> echoed through the pipeline. Gemini 3.x models now work (was HTTP 400).</li>
+          <li><span class="dt">Reasoning recovery</span> (v2.8) &mdash; models that exhaust output budget on reasoning get it surfaced as text instead of the session dying. Per-agent <code>max_output_tokens</code> in frontmatter.</li>
           <li><span class="dt">Collapsed output</span> (v2.7) &mdash; tool blocks and thoughts collapsed by default. Press <code>V</code> to expand tools, <code>T</code> for thoughts, click to expand individual. Consecutive reads grouped into a single summary line.</li>
           <li><span class="dt">Remote attach</span> (v2.5) &mdash; <code>tinycode attach &lt;url&gt;</code> connects a TUI to a headless <code>tinycode serve</code> instance. <code>tinycode export --sanitize</code> redacts paths and secrets for sharing.</li>
           <li><span class="dt">Run mode</span> (v2.6) &mdash; fail-closed questions in non-interactive mode, JSON permission hardening, <code>--fail-on-tool-error</code> for CI pipelines, proper SIGINT handling.</li>
           <li><span class="dt">Plugin management</span> (v2.4&ndash;v2.5) &mdash; <code>plugin search</code>, <code>plugin init</code> scaffolding, release bundles with SHA-256 checksums, <code>install --enable</code> flag.</li>
           <li><span class="dt">23 agents</span> (v2.5+) &mdash; added <code>code-simplifier</code>, <code>qa-tester</code>, and <code>scientist</code>. <code>/swarm</code> lists specialist subagent types for parallel dispatch.</li>
-          <li><span class="dt">IDE integration</span> (v2.5) &mdash; ACP question relay via elicitation, streaming deltas, session modes, model gate with discovery wait, edit tool diffs.</li>
-          <li><span class="dt">Markdown styles</span> (v2.7) &mdash; <code>/markdown-style</code> with dark, light, muted, colorful, notty &mdash; independent from theme.</li>
-          <li><span class="dt">Provider config</span> (v2.7) &mdash; vLLM context inferred from model family, config-based endpoints (<code>provider.&lt;name&gt;.options.baseURL</code>) with env-var-wins precedence.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -488,7 +488,7 @@ Trace from the HTTP handler to the token validation.</pre>
           <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops until a condition is met, <code>/branch</code> forks conversations.</li>
           <li><span class="dt">Markdown styles</span> &mdash; <code>/markdown-style</code> with dark, light, muted, colorful, notty &mdash; independent from theme.</li>
           <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
-          <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max).</li>
+          <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max) across all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic.</li>
           <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code>, <code>/redo</code>, and <code>/rewind</code> to any earlier conversation turn.</li>
           <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
           <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
