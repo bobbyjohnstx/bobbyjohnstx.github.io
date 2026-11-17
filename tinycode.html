@@ -403,17 +403,18 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.9 highlights</h2>
+        <h2 class="sec-title">v2.10 highlights</h2>
         <ul class="details">
-          <li><span class="dt">Scratch threads</span> (v2.9) &mdash; <code>/scratch [prompt]</code> opens a throwaway side conversation. <code>/scratch close</code> discards, <code>/scratch keep</code> saves. <code>Shift+S</code> toggles. Status bar shows SCRATCH indicator.</li>
-          <li><span class="dt">Persistent shell</span> (v2.9) &mdash; <code>monitor</code> tool <code>stdin</code> action writes to a running process's stdin pipe. 1 MiB output cap with truncation tracking.</li>
-          <li><span class="dt">Session worktree</span> (v2.9) &mdash; <code>/worktree</code> creates a git worktree and starts a child session in it. Isolated workspace for feature work.</li>
-          <li><span class="dt">Scoped instructions</span> (v2.9) &mdash; instruction files rendered as labeled blocks, combined text capped at 32 KiB. <code>AGENTS.override.md</code> replaces <code>AGENTS.md</code> per-directory. <code>/instructions</code> shows block listing.</li>
-          <li><span class="dt">MCP resources</span> (v2.9) &mdash; <code>mcp_resource</code> tool with <code>list</code>, <code>templates</code>, and <code>read</code> actions across stdio, SSE, and streamable HTTP transports.</li>
-          <li><span class="dt">Hook trust</span> (v2.9) &mdash; SHA-256 hash-based approval for shell hooks. Ask once per command/event/path, then auto-approved.</li>
-          <li><span class="dt">Shell escalation</span> (v2.9) &mdash; <code>permission</code> and <code>justification</code> fields on the bash tool surface the model's reason for requesting elevated access.</li>
-          <li><span class="dt">/thinking everywhere</span> (v2.8) &mdash; <code>/thinking</code> works on all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic. Gemini 3.x support. Reasoning recovery surfaces exhausted reasoning instead of killing the session.</li>
-          <li><span class="dt">Collapsed output</span> (v2.7) &mdash; tool blocks and thoughts collapsed by default. <code>V</code>/<code>T</code> to expand, click for individual. Consecutive reads grouped into summary lines.</li>
+          <li><span class="dt">Persistent memory</span> (v2.10) &mdash; model-written notes persisted as <code>MEMORY.md</code> per git repo root. Notes tool for read/write/list. Disabled for subagents.</li>
+          <li><span class="dt">Background tasks</span> (v2.10) &mdash; bash <code>background: true</code> and timeout-to-background promotion. Background task completion wakes the parent session.</li>
+          <li><span class="dt">LLM-as-judge</span> (v2.10) &mdash; <code>/goal</code> without a verification command uses the model to evaluate transcript evidence instead.</li>
+          <li><span class="dt">Tool output spilling</span> (v2.10) &mdash; oversized tool output spills to a retained file with preview and path hint. 7-day TTL, 100-file cap.</li>
+          <li><span class="dt">Local instruction files</span> (v2.10) &mdash; <code>@path</code> imports in instruction files (depth 4, cycle detection). <code>AGENTS.local.md</code> and <code>CLAUDE.local.md</code> discovered automatically. Instructions discovered on <code>read</code> as you navigate the tree.</li>
+          <li><span class="dt">Path-scoped rules</span> (v2.10) &mdash; rules in <code>.tinycode/rules/</code> with frontmatter <code>paths</code> globs. Agent-scoped hooks and skill preloading in subagents.</li>
+          <li><span class="dt">Shell write classification</span> (v2.10) &mdash; mutation heuristic detects <code>&gt;</code>, <code>&gt;&gt;</code>, <code>tee</code>, <code>find -delete</code>, <code>sed -i</code>, <code>sort -o</code>. Rewind shows unrestored shell-written paths.</li>
+          <li><span class="dt">Writable roots</span> (v2.10) &mdash; <code>/roots add</code> adds extra writable directories. Write/edit denied outside all roots even with auto-approve.</li>
+          <li><span class="dt">Scratch threads</span> (v2.9) &mdash; <code>/scratch [prompt]</code> opens a throwaway side conversation. <code>Shift+S</code> toggles. <code>/worktree</code> creates isolated git worktree sessions.</li>
+          <li><span class="dt">/thinking everywhere</span> (v2.8) &mdash; <code>/thinking</code> works on all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic. Gemini 3.x support.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -484,17 +485,18 @@ Trace from the HTTP handler to the token validation.</pre>
 
         <h3 class="sub">Key features</h3>
         <ul class="details">
+          <li><span class="dt">Persistent memory</span> &mdash; model-written notes in <code>MEMORY.md</code> per repo. Notes tool for read/write/list, persisted across sessions.</li>
+          <li><span class="dt">Background tasks</span> &mdash; bash <code>background: true</code>, timeout-to-background promotion. Completion wakes the parent session automatically.</li>
           <li><span class="dt">Scratch threads</span> &mdash; <code>/scratch [prompt]</code> opens a throwaway side conversation. <code>Shift+S</code> toggles. <code>/scratch keep</code> saves it.</li>
-          <li><span class="dt">Collapsed output</span> &mdash; tool blocks and thoughts collapsed by default. <code>V</code> expands all tools, <code>T</code> expands thoughts, click for individual. Consecutive reads grouped into summary lines.</li>
+          <li><span class="dt">Collapsed output</span> &mdash; tool blocks and thoughts collapsed by default. <code>V</code> expands all tools, <code>T</code> expands thoughts. Oversized tool output spills to retained files with preview.</li>
           <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines with specialist subagent types; <code>--plan</code> shows decomposition before dispatch.</li>
-          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops, <code>/branch</code> forks conversations, <code>/worktree</code> creates an isolated git worktree session, <code>/chdir</code> changes directory mid-session.</li>
+          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops (with LLM-as-judge when no verification command given), <code>/branch</code> forks conversations, <code>/worktree</code> creates an isolated git worktree session, <code>/chdir</code> changes directory mid-session.</li>
           <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max) across all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic.</li>
-          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
           <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes and writes to stdin pipes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
-          <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code>, <code>/redo</code>, and <code>/rewind</code> to any earlier conversation turn.</li>
-          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code> with SHA-256 hash-based trust (ask once, then auto-approved). <code>additionalContext</code> injects text into model context.</li>
+          <li><span class="dt">Safety boundaries</span> &mdash; <code>/roots add</code> sets writable directories; writes denied outside all roots. Shell write classification detects mutations (<code>&gt;</code>, <code>tee</code>, <code>sed -i</code>). Rewind warns about unrestored shell-written files.</li>
+          <li><span class="dt">Hooks</span> &mdash; shell hooks with SHA-256 trust, <code>args</code> list for direct exec, <code>continue: true</code> for advisory before-hooks. Agent-scoped hooks in subagents.</li>
           <li><span class="dt">Prompt presets</span> &mdash; <code>/preset &lt;name&gt;</code> runs saved prompt templates from <code>presets.json</code>.</li>
-          <li><span class="dt">Session management</span> &mdash; resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>), <code>/warnings</code> for session-scoped warnings.</li>
+          <li><span class="dt">Session management</span> &mdash; resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, <code>/warnings</code>, incremental chat rendering during streaming.</li>
         </ul>
 
         <h3 class="sub">Configuration</h3>
@@ -588,6 +590,7 @@ Trace from the HTTP handler to the token validation.</pre>
           <li><span class="dt">/preset</span> &mdash; run saved prompt templates from <code>presets.json</code></li>
           <li><span class="dt">/warnings</span> &mdash; show session-scoped warnings; <code>/warnings clear</code> resets</li>
           <li><span class="dt">/instructions</span> &mdash; show scoped instruction block listing</li>
+          <li><span class="dt">/roots</span> &mdash; manage writable directories; <code>/roots add &lt;path&gt;</code> allows writes outside the session root</li>
           <li><span class="dt">/incident</span> &mdash; incident response checklist for the ops agent</li>
           <li><span class="dt">/change</span> &mdash; change management workflow for the ops agent</li>
           <li><span class="dt">/host</span> &mdash; host administration checklist for the ops agent</li>
