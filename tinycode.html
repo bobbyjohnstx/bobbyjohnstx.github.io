@@ -403,17 +403,17 @@
     <section class="sec">
       <div class="container">
         <div class="sec-label">What's New</div>
-        <h2 class="sec-title">v2.8 highlights</h2>
+        <h2 class="sec-title">v2.9 highlights</h2>
         <ul class="details">
-          <li><span class="dt">/thinking everywhere</span> (v2.8) &mdash; <code>/thinking</code> now works on all providers: vLLM (<code>thinking_token_budget</code>), LM Studio and OpenRouter (<code>reasoning_effort</code>), Ollama (<code>think</code>), Anthropic (native). <code>/thinking off</code> actually disables reasoning on each.</li>
-          <li><span class="dt">Gemini 3.x support</span> (v2.8) &mdash; <code>thought_signature</code> echoed through the pipeline. Gemini 3.x models now work (was HTTP 400).</li>
-          <li><span class="dt">Reasoning recovery</span> (v2.8) &mdash; models that exhaust output budget on reasoning get it surfaced as text instead of the session dying. Per-agent <code>max_output_tokens</code> in frontmatter. Thinking budgets clamped to model output limits (v2.8.1).</li>
-          <li><span class="dt">Agent permissions</span> (v2.8.1) &mdash; general agent wildcard auto-approve locked down &mdash; destructive commands, secret reads, and <code>.env</code> access now require confirmation.</li>
-          <li><span class="dt">Collapsed output</span> (v2.7) &mdash; tool blocks and thoughts collapsed by default. Press <code>V</code> to expand tools, <code>T</code> for thoughts, click to expand individual. Consecutive reads grouped into a single summary line.</li>
-          <li><span class="dt">Remote attach</span> (v2.5) &mdash; <code>tinycode attach &lt;url&gt;</code> connects a TUI to a headless <code>tinycode serve</code> instance. <code>tinycode export --sanitize</code> redacts paths and secrets for sharing.</li>
-          <li><span class="dt">Run mode</span> (v2.6) &mdash; fail-closed questions in non-interactive mode, JSON permission hardening, <code>--fail-on-tool-error</code> for CI pipelines, proper SIGINT handling.</li>
-          <li><span class="dt">Plugin management</span> (v2.4&ndash;v2.5) &mdash; <code>plugin search</code>, <code>plugin init</code> scaffolding, release bundles with SHA-256 checksums, <code>install --enable</code> flag.</li>
-          <li><span class="dt">23 agents</span> (v2.5+) &mdash; added <code>code-simplifier</code>, <code>qa-tester</code>, and <code>scientist</code>. <code>/swarm</code> lists specialist subagent types for parallel dispatch.</li>
+          <li><span class="dt">Scratch threads</span> (v2.9) &mdash; <code>/scratch [prompt]</code> opens a throwaway side conversation. <code>/scratch close</code> discards, <code>/scratch keep</code> saves. <code>Shift+S</code> toggles. Status bar shows SCRATCH indicator.</li>
+          <li><span class="dt">Persistent shell</span> (v2.9) &mdash; <code>monitor</code> tool <code>stdin</code> action writes to a running process's stdin pipe. 1 MiB output cap with truncation tracking.</li>
+          <li><span class="dt">Session worktree</span> (v2.9) &mdash; <code>/worktree</code> creates a git worktree and starts a child session in it. Isolated workspace for feature work.</li>
+          <li><span class="dt">Scoped instructions</span> (v2.9) &mdash; instruction files rendered as labeled blocks, combined text capped at 32 KiB. <code>AGENTS.override.md</code> replaces <code>AGENTS.md</code> per-directory. <code>/instructions</code> shows block listing.</li>
+          <li><span class="dt">MCP resources</span> (v2.9) &mdash; <code>mcp_resource</code> tool with <code>list</code>, <code>templates</code>, and <code>read</code> actions across stdio, SSE, and streamable HTTP transports.</li>
+          <li><span class="dt">Hook trust</span> (v2.9) &mdash; SHA-256 hash-based approval for shell hooks. Ask once per command/event/path, then auto-approved.</li>
+          <li><span class="dt">Shell escalation</span> (v2.9) &mdash; <code>permission</code> and <code>justification</code> fields on the bash tool surface the model's reason for requesting elevated access.</li>
+          <li><span class="dt">/thinking everywhere</span> (v2.8) &mdash; <code>/thinking</code> works on all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic. Gemini 3.x support. Reasoning recovery surfaces exhausted reasoning instead of killing the session.</li>
+          <li><span class="dt">Collapsed output</span> (v2.7) &mdash; tool blocks and thoughts collapsed by default. <code>V</code>/<code>T</code> to expand, click for individual. Consecutive reads grouped into summary lines.</li>
         </ul>
         <p class="sec-desc" style="margin-top:1.5rem;margin-bottom:0">Full release notes: <a href="https://github.com/bobbyjohnstx/tinycode/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG.md</a></p>
       </div>
@@ -484,18 +484,17 @@ Trace from the HTTP handler to the token validation.</pre>
 
         <h3 class="sub">Key features</h3>
         <ul class="details">
+          <li><span class="dt">Scratch threads</span> &mdash; <code>/scratch [prompt]</code> opens a throwaway side conversation. <code>Shift+S</code> toggles. <code>/scratch keep</code> saves it.</li>
           <li><span class="dt">Collapsed output</span> &mdash; tool blocks and thoughts collapsed by default. <code>V</code> expands all tools, <code>T</code> expands thoughts, click for individual. Consecutive reads grouped into summary lines.</li>
-          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines with specialist subagent types (code-reviewer, security-reviewer, test-engineer, architect, debugger); <code>--plan</code> shows decomposition before dispatch.</li>
-          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops until a condition is met, <code>/branch</code> forks conversations.</li>
-          <li><span class="dt">Markdown styles</span> &mdash; <code>/markdown-style</code> with dark, light, muted, colorful, notty &mdash; independent from theme.</li>
-          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
+          <li><span class="dt">Multi-agent orchestration</span> &mdash; <code>/swarm</code> runs parallel agents as goroutines with specialist subagent types; <code>--plan</code> shows decomposition before dispatch.</li>
+          <li><span class="dt">Workflow commands</span> &mdash; <code>/effort</code> adjusts reasoning depth, <code>/goal</code> runs autonomous loops, <code>/branch</code> forks conversations, <code>/worktree</code> creates an isolated git worktree session, <code>/chdir</code> changes directory mid-session.</li>
           <li><span class="dt">Extended thinking</span> &mdash; <code>/thinking</code> controls reasoning budget (off/low/medium/high/max) across all providers: vLLM, LM Studio, OpenRouter, Ollama, Anthropic.</li>
+          <li><span class="dt">Context awareness</span> &mdash; <code>/context</code> visualizes usage with category breakdown, <code>/btw</code> for side questions, <code>/changes</code> for tinycode-modified files only.</li>
+          <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes and writes to stdin pipes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
           <li><span class="dt">Snapshot undo/redo</span> &mdash; <code>/undo</code>, <code>/redo</code>, and <code>/rewind</code> to any earlier conversation turn.</li>
-          <li><span class="dt">Built-in tools</span> &mdash; <code>monitor</code> watches background processes, <code>notepad</code> survives compaction, <code>report_findings</code> for structured review output.</li>
-          <li><span class="dt">Which-key panel</span> (<code>Ctrl+X</code>) &mdash; floating overlay showing all leader key follow-ups.</li>
-          <li><span class="dt">Plugin management</span> &mdash; <code>plugin search</code>, <code>plugin init</code> scaffolding, release bundles with SHA-256 checksums.</li>
-          <li><span class="dt">Session management</span> &mdash; resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>).</li>
-          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code>; <code>additionalContext</code> injects text into model context.</li>
+          <li><span class="dt">Hooks</span> &mdash; shell hooks in <code>settings.json</code> with SHA-256 hash-based trust (ask once, then auto-approved). <code>additionalContext</code> injects text into model context.</li>
+          <li><span class="dt">Prompt presets</span> &mdash; <code>/preset &lt;name&gt;</code> runs saved prompt templates from <code>presets.json</code>.</li>
+          <li><span class="dt">Session management</span> &mdash; resume from CLI (<code>-c</code>/<code>-r</code>), archive, HTML export, clipboard copy (<code>/copy</code>), <code>/warnings</code> for session-scoped warnings.</li>
         </ul>
 
         <h3 class="sub">Configuration</h3>
@@ -583,6 +582,12 @@ Trace from the HTTP handler to the token validation.</pre>
         <h3 class="sub">Skills &amp; slash commands</h3>
         <p class="note">Slash commands like <code>/debug</code>, <code>/review</code>, <code>/trace</code>, <code>/plan</code>, <code>/verify</code>, and <code>/test</code> invoke the matching agent. Bundled skills provide checklists and workflows.</p>
         <ul class="details">
+          <li><span class="dt">/scratch</span> &mdash; throwaway side conversation; <code>/scratch keep</code> saves, <code>Shift+S</code> toggles</li>
+          <li><span class="dt">/worktree</span> &mdash; create a git worktree and start a child session in it</li>
+          <li><span class="dt">/chdir</span> &mdash; change working directory mid-session</li>
+          <li><span class="dt">/preset</span> &mdash; run saved prompt templates from <code>presets.json</code></li>
+          <li><span class="dt">/warnings</span> &mdash; show session-scoped warnings; <code>/warnings clear</code> resets</li>
+          <li><span class="dt">/instructions</span> &mdash; show scoped instruction block listing</li>
           <li><span class="dt">/incident</span> &mdash; incident response checklist for the ops agent</li>
           <li><span class="dt">/change</span> &mdash; change management workflow for the ops agent</li>
           <li><span class="dt">/host</span> &mdash; host administration checklist for the ops agent</li>
